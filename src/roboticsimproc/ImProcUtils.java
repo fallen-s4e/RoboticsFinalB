@@ -15,6 +15,8 @@ import roboticsimproc.lectures.CImage;
  */
 public class ImProcUtils {
 
+    public static final double MIN_EUCLID_DISTANCE = 10;
+
     public static boolean[][] extendObstacles(boolean[][] arr, int thinkness) {
         boolean[][] res = new boolean[arr.length][arr[0].length];
         int t = thinkness / 2;
@@ -30,7 +32,9 @@ public class ImProcUtils {
                     for (int i1 = -t; i1 < t; i1++) {
                         for (int j1 = -t; j1 < t; j1++) {
                             try {
-                                res[i + i1][j + j1] = true;
+                                if (i1 * i1 + j1 * j1 < thinkness * thinkness) {
+                                    res[i + i1][j + j1] = true;
+                                }
                             } catch (IndexOutOfBoundsException ex) {
                             }
                         }
@@ -40,8 +44,7 @@ public class ImProcUtils {
         }
         return res;
     }
-    
-    
+
     public static boolean[][] inversedThreshold(boolean[][] thresholded) {
         for (int i = 0; i < thresholded.length; i++) {
             for (int j = 0; j < thresholded[i].length; j++) {
@@ -69,11 +72,11 @@ public class ImProcUtils {
 
     public static Vector<Point> getFirstRandomPoints(boolean[][] thresholded,
             int numberOfPoints) {
-        Vector<Point> points = getFirstPoints(thresholded, thresholded.length*thresholded[0].length);
-        double prob = ((double)numberOfPoints) / ((double)points.size());
+        Vector<Point> points = getFirstPoints(thresholded, thresholded.length * thresholded[0].length);
+        double prob = ((double) numberOfPoints) / ((double) points.size());
         Vector<Point> res = new Vector<Point>();
         for (Point point : points) {
-            if (new Random().nextInt(1000) < 1000*prob) {
+            if (new Random().nextInt(1000) < 1000 * prob) {
                 res.add(point);
             }
         }

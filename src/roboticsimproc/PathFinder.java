@@ -12,7 +12,6 @@ import java.util.Vector;
  * @author fallen
  */
 public class PathFinder {
-    private static final double MIN_EUCLID_DISTANCE = 10;
 
     public static class PointCrossing {
 
@@ -59,17 +58,21 @@ public class PathFinder {
     /**
      * returns points for each points crossing
      */
-    public static Vector<PointCrossing> pointCrossings(Vector<Point> points) {
+    public static Vector<PointCrossing> pointCrossings(Vector<Point> points, 
+            boolean[][] thresholded) {
         Vector<PointCrossing> res = new Vector<PathFinder.PointCrossing>();
+        boolean[][] extended = ImProcUtils.extendObstacles(
+                thresholded, (int)ImProcUtils.MIN_EUCLID_DISTANCE);
         for (int i = 0; i < points.size(); i++) {
             for (int j = i+1; j < points.size(); j++) {
                 Point p1 = points.get(i);
                 Point p2 = points.get(j);
                 PointCrossing pc = new PointCrossing(p1, p2);
-                if (getMinDistance(pc.crossing, points) > MIN_EUCLID_DISTANCE) {
+                if (!extended[pc.crossing.x][pc.crossing.y]) {
                     res.add(pc);
                 }
                 /*
+                // variant 1
                 if (euclideanDistance(p1, p2) > MIN_EUCLID_DISTANCE) {
                     res.add(pc);
                 }
