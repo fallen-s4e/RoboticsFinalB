@@ -10,7 +10,7 @@ import roboticsimproc.lectures.CImage;
  *
  * @author fallen
  */
-public class ThresholderSimple extends IThresholder{
+public class ThresholderSimple implements IThresholder{
 
     private int threshold;
 

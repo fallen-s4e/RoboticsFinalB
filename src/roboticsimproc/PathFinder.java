@@ -12,7 +12,7 @@ import java.util.Vector;
  * @author fallen
  */
 public class PathFinder {
-    private static final double MIN_EUCLID_DISTANCE = 15;
+    private static final double MIN_EUCLID_DISTANCE = 10;
 
     public static class PointCrossing {
 

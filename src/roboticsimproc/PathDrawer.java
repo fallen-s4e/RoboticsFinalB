@@ -46,8 +46,8 @@ public class PathDrawer {
      * @return
      */
     public CImage drawPath() {
-        Vector<Point> points = thresholder.getFirstRandomPoints(
-                thresholder.inversedThreshold(ci), 300);
+        Vector<Point> points = ImProcUtils.getFirstRandomPoints(
+                ImProcUtils.inversedThreshold(thresholder.threshold(ci)), 300);
         
         // drawing just point
         // drawPoints(points, Color.blue, 4);
