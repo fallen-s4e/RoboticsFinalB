@@ -56,6 +56,8 @@ public class PathDrawer {
 
         // drawing points crossing
         System.out.println("crossings.size() = " + crossings.size());
+        crossings = PathFinder.unconcentrateCrossings(crossings, 15, thr.length, thr[0].length);
+        System.out.println("crossings.size() = " + crossings.size());
         drawPointCrossings(crossings);
         return ci;
     }
