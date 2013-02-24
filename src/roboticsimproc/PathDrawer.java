@@ -48,12 +48,15 @@ public class PathDrawer {
     public CImage drawPath() {
         boolean[][] thr = ImProcUtils.inversedThreshold(thresholder.threshold(ci));
         Vector<Point> points = ImProcUtils.getFirstRandomPoints(thr, 1000);
-        
+        points.addAll(ImProcUtils.getCornerObstacles(thr));
+        Vector<PointCrossing> crossings = PathFinder.pointCrossings(points, thr);
+
         // drawing just point
         // drawPoints(points, Color.blue, 2);
-        
+
         // drawing points crossing
-        drawPointCrossings(PathFinder.pointCrossings(points, thr));
+        System.out.println("crossings.size() = " + crossings.size());
+        drawPointCrossings(crossings);
         return ci;
     }
 
@@ -62,7 +65,7 @@ public class PathDrawer {
             drawCircle(points.get(i), color, thickness);
         }
     }
-    
+
     private void drawPointCrossings(Vector<PathFinder.PointCrossing> points) {
         for (int i = 0; i < points.size(); i++) {
             PointCrossing crossing = points.get(i);

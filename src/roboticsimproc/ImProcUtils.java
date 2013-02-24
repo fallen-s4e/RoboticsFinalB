@@ -54,6 +54,15 @@ public class ImProcUtils {
         return thresholded;
     }
 
+    public static final Vector<Point> getCornerObstacles(boolean[][] thresholded) {
+        Vector<Point> v = new Vector<Point>(0);
+        v.add(new Point(0, 0));
+        v.add(new Point(0, thresholded[0].length - 1));
+        v.add(new Point(thresholded.length - 1, 0));
+        v.add(new Point(thresholded.length - 1, thresholded[0].length - 1));
+        return v;
+    }
+
     public static Vector<Point> getFirstPoints(boolean[][] thresholded, int numberOfPoints) {
         Vector<Point> v = new Vector<Point>();
         for (int i = 0; i < thresholded.length; i++) {
