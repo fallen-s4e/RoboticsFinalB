@@ -99,5 +99,59 @@ public class PointCrossing {
         }
         return res;
     }
+
+    public static Vector<PointCrossing> filterBadCrossings(
+            Vector<PointCrossing> crossings, boolean[][] thr) {
+        Vector<PointCrossing> res = new Vector<PointCrossing>();
+        for (PointCrossing crossing : crossings) {
+            if (isBadCrossing(crossing, thr) == null) {
+                res.add(crossing);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * returns null if is not a bad, or a point which is an obstacle in the middle
+     */
+    public static Point isBadCrossing(PointCrossing pc, boolean[][] thr) {
+        Vector<Point> pointsOnPath = ImProcUtils.bresenhamLine(pc.point1, pc.point2);
+
+        int i = 0;
+        Point p = pointsOnPath.get(i++);
+        int c1 = 0, c2 = 0, c3 = 0;
+
+        try {
+            while (thr[p.x][p.y]) {   // skipping starting obstacles
+                p = pointsOnPath.get(i++);
+                c1++;
+            }
+
+            while (!thr[p.x][p.y]) {  // skipping all non-obstacles
+                p = pointsOnPath.get(i++);
+                c2++;
+            }
+
+            while (thr[p.x][p.y]) {   // skipping obstacles again
+                p = pointsOnPath.get(i++);
+                c3++;
+            }
+            p = pointsOnPath.get(i);
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            return null;
+        }
+
+        if (!thr[p.x][p.y]) { // non-obstacle appeared. Bad crossing!
+            System.out.println("appeated( p0 = " + p);
+            System.out.println("appeated( p1 = " + pc.crossing);
+            System.out.println("appeated( p2 = " + pc.point1);
+            System.out.println("appeated( p3 = " + pc.point2);
+            System.out.println("c1 = " + c1);
+            System.out.println("c2 = " + c2);
+            System.out.println("c3 = " + c3);
+            return p;
+        }
+        return null;
+    }
     //</editor-fold>
 }
