@@ -7,7 +7,9 @@ package roboticsimproc;
 import java.awt.Color;
 import java.awt.Point;
 import java.util.Vector;
+import roboticsimproc.PathFinder.PointCrossing;
 import roboticsimproc.lectures.CImage;
+import sun.dc.pr.PathFiller;
 
 /**
  *
@@ -45,14 +47,28 @@ public class PathDrawer {
      */
     public CImage drawPath() {
         Vector<Point> points = thresholder.getFirstRandomPoints(
-                thresholder.inversedThreshold(ci), 2000);
-        printPoints(points, Color.blue, 4);
+                thresholder.inversedThreshold(ci), 300);
+        
+        // drawing just point
+        // drawPoints(points, Color.blue, 4);
+        
+        // drawing points crossing
+        drawPointCrossings(PathFinder.pointCrossings(points));
         return ci;
     }
 
-    private void printPoints(Vector<Point> points, Color color, int thickness) {
+    private void drawPoints(Vector<Point> points, Color color, int thickness) {
         for (int i = 0; i < points.size(); i++) {
             drawCircle(points.get(i), color, thickness);
+        }
+    }
+    
+    private void drawPointCrossings(Vector<PathFinder.PointCrossing> points) {
+        for (int i = 0; i < points.size(); i++) {
+            PointCrossing crossing = points.get(i);
+            drawCircle(crossing.getPoint1(), Color.red, 4);
+            drawCircle(crossing.getPoint2(), Color.red, 4);
+            drawCircle(crossing.getCrossing(), Color.blue, 4);
         }
     }
 }
