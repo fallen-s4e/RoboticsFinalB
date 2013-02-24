@@ -39,16 +39,10 @@ public class PathFinder {
         }
     }
 
-    public static double euclideanDistance(Point p1, Point p2) {
-        double dx = p1.x - p2.x;
-        double dy = p1.y - p2.y;
-        return Math.sqrt(dx * dx + dy * dy);
-    }
-
     public static double getMinDistance(Point p, Vector<Point> ps) {
-        double minDist = euclideanDistance(ps.get(0), p);
+        double minDist = ImProcUtils.euclideanDistance(ps.get(0), p);
         for (int i = 0; i < ps.size(); i++) {
-            double t = euclideanDistance(p, ps.get(i));
+            double t = ImProcUtils.euclideanDistance(p, ps.get(i));
             if (t < minDist) {
                 minDist = t;
             }
