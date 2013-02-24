@@ -12,33 +12,33 @@ import java.util.Vector;
  *
  * @author fallen
  */
-public class PathFinder {
+public class PointCrossing {
 
-    public static class PointCrossing {
+    //<editor-fold desc="non static" defaultstate="collapsed">
+    private final Point point1;
+    private final Point point2;
+    private final Point crossing;
 
-        private final Point point1;
-        private final Point point2;
-        private final Point crossing;
-
-        public PointCrossing(Point point1, Point point2) {
-            this.point1 = point1;
-            this.point2 = point2;
-            this.crossing = new Point((point1.x + point2.x) / 2, (point1.y + point2.y) / 2);
-        }
-
-        public Point getCrossing() {
-            return crossing;
-        }
-
-        public Point getPoint1() {
-            return point1;
-        }
-
-        public Point getPoint2() {
-            return point2;
-        }
+    public PointCrossing(Point point1, Point point2) {
+        this.point1 = point1;
+        this.point2 = point2;
+        this.crossing = new Point((point1.x + point2.x) / 2, (point1.y + point2.y) / 2);
     }
 
+    public Point getCrossing() {
+        return crossing;
+    }
+
+    public Point getPoint1() {
+        return point1;
+    }
+
+    public Point getPoint2() {
+        return point2;
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="static" defaultstate="collapsed">
     public static double getMinDistance(Point p, Vector<Point> ps) {
         double minDist = ImProcUtils.euclideanDistance(ps.get(0), p);
         for (int i = 0; i < ps.size(); i++) {
@@ -55,7 +55,7 @@ public class PathFinder {
      */
     public static Vector<PointCrossing> pointCrossings(Vector<Point> points,
             boolean[][] thresholded) {
-        Vector<PointCrossing> res = new Vector<PathFinder.PointCrossing>();
+        Vector<PointCrossing> res = new Vector<PointCrossing>();
         boolean[][] extended = ImProcUtils.extendObstacles(
                 thresholded, (int) ImProcUtils.MIN_EUCLID_DISTANCE);
         for (int i = 0; i < points.size(); i++) {
@@ -99,4 +99,5 @@ public class PathFinder {
         }
         return res;
     }
+    //</editor-fold>
 }

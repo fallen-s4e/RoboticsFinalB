@@ -7,7 +7,7 @@ package roboticsimproc;
 import java.awt.Color;
 import java.awt.Point;
 import java.util.Vector;
-import roboticsimproc.PathFinder.PointCrossing;
+import roboticsimproc.PointCrossing;
 import roboticsimproc.lectures.CImage;
 import sun.dc.pr.PathFiller;
 
@@ -49,14 +49,14 @@ public class PathDrawer {
         boolean[][] thr = ImProcUtils.inversedThreshold(thresholder.threshold(ci));
         Vector<Point> points = ImProcUtils.getFirstRandomPoints(thr, 1000);
         points.addAll(ImProcUtils.getCornerObstacles(thr));
-        Vector<PointCrossing> crossings = PathFinder.pointCrossings(points, thr);
+        Vector<PointCrossing> crossings = PointCrossing.pointCrossings(points, thr);
 
         // drawing just point
         // drawPoints(points, Color.blue, 2);
 
         // drawing points crossing
         System.out.println("crossings.size() = " + crossings.size());
-        crossings = PathFinder.unconcentrateCrossings(crossings, 15, thr.length, thr[0].length);
+        crossings = PointCrossing.unconcentrateCrossings(crossings, 15, thr.length, thr[0].length);
         System.out.println("crossings.size() = " + crossings.size());
         drawPointCrossings(crossings);
         return ci;
@@ -68,7 +68,7 @@ public class PathDrawer {
         }
     }
 
-    private void drawPointCrossings(Vector<PathFinder.PointCrossing> points) {
+    private void drawPointCrossings(Vector<PointCrossing> points) {
         for (int i = 0; i < points.size(); i++) {
             PointCrossing crossing = points.get(i);
             drawCircle(crossing.getPoint1(), Color.blue, 4);
