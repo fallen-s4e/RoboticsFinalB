@@ -91,10 +91,49 @@ public class ImProcUtils {
         }
         return res;
     }
-    
+
     public static double euclideanDistance(Point p1, Point p2) {
         double dx = p1.x - p2.x;
         double dy = p1.y - p2.y;
         return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    public static Vector<Point> bresenhamLine(Point p1, Point p2) {
+        int x0 = p1.x, x1 = p2.x;
+        int y0 = p1.y, y1 = p2.y;
+
+        int deltax = Math.abs(x1 - x0);
+        int deltay = Math.abs(y1 - y0);
+        double error = 0;
+        
+        Vector<Point> v = new Vector<Point>();
+        if (deltax > deltay) {
+            if (x0 > x1) { return bresenhamLine(p2, p1); }
+            double deltaerr = Math.abs(((double)deltay) / ((double)deltax));
+            // note that this division needs to be done in a way that preserves the fractional part
+            int y = y0;
+            for (int x = x0; x <= x1; x++) {
+                v.add(new Point(x, y));
+                error += deltaerr;
+                if (error >= 0.5) {
+                    y++;
+                    error = error - 1.0;
+                }
+            }
+        } else {
+            if (y0 > y1) { return bresenhamLine(p2, p1); }
+            double deltaerr = Math.abs(((double)deltax) / ((double)deltay));
+            // note that this division needs to be done in a way that preserves the fractional part
+            int x = x0;
+            for (int y = y0; y <= y1; y++) {
+                v.add(new Point(x, y));
+                error += deltaerr;
+                if (error >= 0.5) {
+                    x++;
+                    error = error - 1.0;
+                }
+            }
+        }
+        return v;
     }
 }
