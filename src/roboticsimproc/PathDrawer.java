@@ -55,10 +55,9 @@ public class PathDrawer {
         // drawPoints(points, Color.blue, 2);
 
         // drawing points crossing
-        System.out.println("crossings.size() = " + crossings.size());
         crossings = PointCrossing.unconcentrateCrossings(crossings, 15, thr.length, thr[0].length);
-        crossings = PointCrossing.filterBadCrossings(crossings, thr);
-        System.out.println("crossings.size() = " + crossings.size());
+        crossings = PointCrossing.filterBadCrossings(crossings, 
+                ImProcUtils.extendObstacles(thr, 13));
         drawPointCrossings(crossings);
         return ci;
     }
