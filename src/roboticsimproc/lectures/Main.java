@@ -7,6 +7,7 @@ package roboticsimproc.lectures;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
+import roboticsimproc.PathDrawer;
 
 /**
  * Corners are obstacles. 
@@ -48,6 +49,7 @@ public class Main {
                 CImage ci = new CImage("trackPhotos/foto1.jpg");
                 Dimension d = new Dimension(ci.getW()+20, ci.getH()+40);
                 
+                ci = new PathDrawer(ci).drawPath();
                 PanelDraw pd = new PanelDraw(ci);
                 pd.setPreferredSize(d);
                 

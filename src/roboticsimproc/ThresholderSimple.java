@@ -1,0 +1,36 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package roboticsimproc;
+
+import roboticsimproc.lectures.CImage;
+
+/**
+ *
+ * @author fallen
+ */
+public class ThresholderSimple extends IThresholder{
+
+    private int threshold;
+
+    public ThresholderSimple(int threshold) {
+        this.threshold = threshold;
+    }
+    
+    @Override
+    public boolean[][] threshold(CImage ci) {
+        boolean res[][] = new boolean[ci.getW()][ci.getH()];
+        for (int i = 0; i < res.length; i++) {
+            for (int j = 0; j < res[i].length; j++) {
+                int r = ci.cor(i, j).getRed();
+                int b = ci.cor(i, j).getBlue();
+                int g = ci.cor(i, j).getGreen();
+                int gray = (r+g+b) / 3;
+                res[i][j] = gray > threshold;
+            }
+        }
+        return res;
+    }
+    
+}
