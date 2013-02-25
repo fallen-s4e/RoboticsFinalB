@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package roboticsimproc;
+package roboticsimproc.threshold;
 
 import roboticsimproc.lectures.CImage;
 

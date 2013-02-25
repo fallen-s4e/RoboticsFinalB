@@ -2,30 +2,27 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package roboticsimproc;
+package roboticsimproc.graph;
 
 import java.util.Vector;
+import roboticsimproc.ImProcUtils;
+import roboticsimproc.PointCrossing;
 
 /**
  *
  * @author fallen
  */
-public class GraphMakerInRadius implements IGraphMaker{
+public class GraphMakerSparseInRadius implements IGraphMaker{
     
     private final double maxRadius;
 
-    public GraphMakerInRadius(double maxRadius) {
+    public GraphMakerSparseInRadius(double maxRadius) {
         this.maxRadius = maxRadius;
     }
 
     @Override
-    public double[][] makeGraph(Vector<PointCrossing> crossings, int w, int h) {
-        double[][] res = new double[h][w];
-        for (int i = 0; i < res.length; i++) {
-            for (int j = 0; j < res[0].length; j++) {
-                res[i][j] = Double.POSITIVE_INFINITY;
-            }
-        }
+    public IGraph<PointCrossing> makeGraph(Vector<PointCrossing> crossings, int w, int h) {
+        GraphSparse<PointCrossing> gr = new GraphSparse<PointCrossing>();
         for (int i = 0; i < crossings.size(); i++) {
             for (int j = 0; j < crossings.size(); j++) {
                 if (i != j) {
@@ -34,13 +31,15 @@ public class GraphMakerInRadius implements IGraphMaker{
                     double dist = ImProcUtils.euclideanDistance(
                             c1.getCrossing(), c2.getCrossing());
                     if (dist < maxRadius) {
-                        res[i][j] = dist;
-                        res[j][i] = dist;
+                        gr.addNode(c1);
+                        gr.addNode(c2);
+                        gr.addRelation(c1, c2, dist);
+                        gr.addRelation(c2, c1, dist);
                     }
                 }
             }
         }
-        return res;
+        return gr;
     }
     
 }

@@ -4,10 +4,15 @@
  */
 package roboticsimproc;
 
+import roboticsimproc.threshold.IThresholder;
+import roboticsimproc.threshold.ThresholderSimple;
 import java.awt.Color;
 import java.awt.Point;
 import java.util.Vector;
 import roboticsimproc.PointCrossing;
+import roboticsimproc.graph.GraphMakerSparseInRadius;
+import roboticsimproc.graph.IGraph;
+import roboticsimproc.graph.IGraphMaker;
 import roboticsimproc.lectures.CImage;
 import roboticsimproc.lectures.cImageZoom;
 import sun.dc.pr.PathFiller;
@@ -20,6 +25,7 @@ public class PathDrawer {
 
     private cImageZoom ci;
     private IThresholder thresholder = new ThresholderSimple(90);
+    private IGraphMaker grMaker = new GraphMakerSparseInRadius(30);
 
     public PathDrawer(cImageZoom ci) {
         this.ci = ci;
@@ -63,7 +69,10 @@ public class PathDrawer {
         drawExtended(extended);
         
         // crossings.setSize(50);
-        drawPointCrossings(PointCrossing.filterBadCrossings(crossings, extended));
+        System.out.println("crossings.size() = " + crossings.size());
+        crossings = PointCrossing.filterBadCrossings(crossings, extended);
+        System.out.println("crossings.size() = " + crossings.size());
+        drawPointCrossings(crossings);
         
         // temp >>>
         // crossings = PointCrossing.filterBadCrossings(crossings, extended);
