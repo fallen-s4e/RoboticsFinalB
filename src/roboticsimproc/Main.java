@@ -23,14 +23,14 @@ import sun.dc.pr.PathFiller;
  *
  * @author fallen
  */
-public class PathDrawer {
+public class Main {
 
     private cImageZoom ci;
     private IThresholder thresholder = new ThresholderSimple(90);
     private GraphFactory grMaker = new GraphFactory();
     private IPathFinder<PointCrossing> pf = new PathFinderDummy<PointCrossing>(3);
 
-    public PathDrawer(cImageZoom ci) {
+    public Main(cImageZoom ci) {
         this.ci = ci;
     }
 
@@ -95,7 +95,7 @@ public class PathDrawer {
 
             @Override
             public void run() {
-                new PathDrawer(new cImageZoom("trackPhotos/foto1.jpg")).run();
+                new Main(new cImageZoom("trackPhotos/foto1.jpg")).run();
             }
         });
     }
