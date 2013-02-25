@@ -29,27 +29,7 @@ public class Main {
     private IThresholder thresholder = new ThresholderSimple(90);
     private GraphFactory grMaker = new GraphFactory();
     private IPathFinder<PointCrossing> pf = new PathFinderDummy<PointCrossing>(3);
-
-    public Main(cImageZoom ci) {
-        this.ci = ci;
-    }
-
-    private void drawCircle(Point p, Color color, int len) {
-        int x = p.x;
-        int y = p.y;
-        int l = len / 2;
-        for (int i = -l; i < l; i++) {
-            for (int j = -l; j < l; j++) {
-                try {
-                    if (i * i + j * j < l * l) {
-                        ci.cor(x + i, y + j, color);
-                    }
-                } catch (IndexOutOfBoundsException ex) {
-                }
-            }
-        }
-    }
-
+    
     /**
      * entry point here
      *
@@ -90,6 +70,7 @@ public class Main {
         return ci;
     }
     
+    //<editor-fold defaultstate="collapsed" desc="static main and constructors">
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
 
@@ -99,7 +80,13 @@ public class Main {
             }
         });
     }
-
+    
+    public Main(cImageZoom ci) {
+        this.ci = ci;
+    }
+    //</editor-fold>
+    
+    //<editor-fold defaultstate="collapsed" desc="drawings">
     private void drawPoints(Vector<Point> points, Color color, int thickness) {
         for (int i = 0; i < points.size(); i++) {
             drawCircle(points.get(i), color, thickness);
@@ -154,4 +141,21 @@ public class Main {
             prev = path.get(i);
         }
     }
+    
+     private void drawCircle(Point p, Color color, int len) {
+        int x = p.x;
+        int y = p.y;
+        int l = len / 2;
+        for (int i = -l; i < l; i++) {
+            for (int j = -l; j < l; j++) {
+                try {
+                    if (i * i + j * j < l * l) {
+                        ci.cor(x + i, y + j, color);
+                    }
+                } catch (IndexOutOfBoundsException ex) {
+                }
+            }
+        }
+    }
+    //</editor-fold>
 }

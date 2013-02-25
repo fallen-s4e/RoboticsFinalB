@@ -98,6 +98,7 @@ public class ImProcUtils {
         return Math.sqrt(dx * dx + dy * dy);
     }
 
+    //<editor-fold defaultstate="collapsed" desc="bresenham algo">
     public static Vector<Point> bresenhamLine(Point p1, Point p2) {
         int x0 = p1.x, x1 = p2.x;
         int y0 = p1.y, y1 = p2.y;
@@ -138,4 +139,5 @@ public class ImProcUtils {
         }
         return v;
     }
+    //</editor-fold>
 }

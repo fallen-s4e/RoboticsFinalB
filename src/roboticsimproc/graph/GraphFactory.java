@@ -13,9 +13,6 @@ import roboticsimproc.PointCrossing;
  * @author fallen
  */
 public class GraphFactory {
-    
-    public GraphFactory() {
-    }
 
     public IGraph<PointCrossing> makeSparseGraph(Vector<PointCrossing> crossings, 
        int w, int h, double maxRadius) {
