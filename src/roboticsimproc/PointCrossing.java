@@ -36,6 +36,12 @@ public class PointCrossing {
     public Point getPoint2() {
         return point2;
     }
+
+    @Override
+    public String toString() {
+        return String.format("(PointCrossing: pc = %s, p1 = %s, p2 = %s)", 
+                crossing.toString(), point1.toString(), point2.toString());
+    }
     //</editor-fold>
 
     //<editor-fold desc="static" defaultstate="collapsed">
@@ -104,17 +110,14 @@ public class PointCrossing {
             Vector<PointCrossing> crossings, boolean[][] thr) {
         Vector<PointCrossing> res = new Vector<PointCrossing>();
         for (PointCrossing crossing : crossings) {
-            if (isBadCrossing(crossing, thr) == null) {
+            if (!isBadCrossing(crossing, thr)) {
                 res.add(crossing);
             }
         }
         return res;
     }
 
-    /**
-     * returns null if is not a bad, or a point which is an obstacle in the middle
-     */
-    public static Point isBadCrossing(PointCrossing pc, boolean[][] thr) {
+    public static boolean isBadCrossing(PointCrossing pc, boolean[][] thr) {
         Vector<Point> pointsOnPath = ImProcUtils.bresenhamLine(pc.point1, pc.point2);
 
         int n = pointsOnPath.size();
@@ -122,10 +125,10 @@ public class PointCrossing {
         for (int i = (int) (n*blindZone); i < n*(1-blindZone); i++) {
             Point p = pointsOnPath.get(i);
             if (thr[p.x][p.y]) {
-                return p;
+                return true;
             }
         }
-        return null;
+        return false;
     }
     //</editor-fold>
 }
