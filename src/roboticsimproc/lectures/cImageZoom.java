@@ -5,6 +5,7 @@
 package roboticsimproc.lectures;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import javax.swing.JFrame;
 
@@ -58,6 +59,8 @@ public class cImageZoom extends CImage {
                 cor(x1, y1, aux.cor(x, y));
             }
         }
+        Dimension size= vista.getSize();
+        vista.setSize(new Dimension(size.width/2, size.height/2));
         // FIXME : nome = "ZoomHalfXY.jpg";
     }
 
@@ -76,6 +79,8 @@ public class cImageZoom extends CImage {
                 cor(x1++, y1 + 1, c);
             }
         }
+        Dimension size= vista.getSize();
+        vista.setSize(new Dimension(size.width*2, size.height*2));
         // FIXME: nome = "ZoomDoubleXY.jpg";
     }
 } // end of cImageZoom class
