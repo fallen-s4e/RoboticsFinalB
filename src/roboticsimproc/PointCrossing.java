@@ -14,6 +14,7 @@ import java.util.Vector;
  */
 public class PointCrossing {
 
+
     //<editor-fold desc="non static" defaultstate="collapsed">
     private final Point point1;
     private final Point point2;
@@ -129,6 +130,14 @@ public class PointCrossing {
             }
         }
         return false;
+    }
+    
+    public static Vector<Point> justCrossigns(Vector<PointCrossing> crossings) {
+        Vector<Point> v = new Vector<Point>();
+        for (PointCrossing pc : crossings) {
+            v.add(pc.getCrossing());
+        }
+        return v;
     }
     //</editor-fold>
 }

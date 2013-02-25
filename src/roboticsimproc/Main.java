@@ -28,7 +28,7 @@ public class Main {
     private cImageZoom ci;
     private IThresholder thresholder = new ThresholderSimple(90);
     private GraphFactory grMaker = new GraphFactory();
-    private IPathFinder<PointCrossing> pf = new PathFinderDummy<PointCrossing>(3);
+    private IPathFinder<Point> pf = new PathFinderDummy<Point>(3);
     
     /**
      * entry point here
@@ -60,10 +60,11 @@ public class Main {
         // crossings = PointCrossing.filterBadCrossings(crossings, extended);
         
         // path drawing
-        IGraph<PointCrossing> gr =
-                grMaker.makeSparseGraph(crossings, extended.length, 
+        Vector<Point> nodes = PointCrossing.justCrossigns(crossings);
+        IGraph<Point> gr =
+                grMaker.makeSparseGraph(nodes, extended.length, 
                 extended[0].length, ImProcUtils.MIN_EUCLID_DISTANCE*1.8); // almost 2 euclidian dist
-        drawPath(pf.findPath(gr, crossings.get(0)));
+        drawPath(pf.findPath(gr, nodes.get(0)));
 
         ci.ZoomDoubleXY();//ci.ZoomDoubleXY();
         // drawPointCrossings(crossings);
@@ -131,13 +132,13 @@ public class Main {
         }
     }
 
-    private void drawPath(Vector<PointCrossing> path) {
+    private void drawPath(Vector<Point> path) {
         if (path.size() < 2) {
             return;
         }
-        PointCrossing prev = path.get(0);
+        Point prev = path.get(0);
         for (int i = 1; i < path.size(); i++) {
-            drawLine(prev.getCrossing(), path.get(i).getCrossing());
+            drawLine(prev, path.get(i));
             prev = path.get(i);
         }
     }
