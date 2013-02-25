@@ -9,6 +9,7 @@ import java.awt.Point;
 import java.util.Vector;
 import roboticsimproc.PointCrossing;
 import roboticsimproc.lectures.CImage;
+import roboticsimproc.lectures.cImageZoom;
 import sun.dc.pr.PathFiller;
 
 /**
@@ -17,10 +18,10 @@ import sun.dc.pr.PathFiller;
  */
 public class PathDrawer {
 
-    private CImage ci;
+    private cImageZoom ci;
     private IThresholder thresholder = new ThresholderSimple(90);
 
-    public PathDrawer(CImage ci) {
+    public PathDrawer(cImageZoom ci) {
         this.ci = ci;
     }
 
@@ -47,6 +48,7 @@ public class PathDrawer {
      */
     public CImage drawPath() {
         boolean[][] thr = ImProcUtils.inversedThreshold(thresholder.threshold(ci));
+        boolean[][] extended = ImProcUtils.extendObstacles(thr, 13);
         Vector<Point> points = ImProcUtils.getFirstRandomPoints(thr, 1000);
         points.addAll(ImProcUtils.getCornerObstacles(thr));
         Vector<PointCrossing> crossings = PointCrossing.pointCrossings(points, thr);
@@ -55,10 +57,19 @@ public class PathDrawer {
         // drawPoints(points, Color.blue, 2);
 
         // drawing points crossing
-        crossings = PointCrossing.unconcentrateCrossings(crossings, 15, thr.length, thr[0].length);
-        crossings = PointCrossing.filterBadCrossings(crossings, 
-                ImProcUtils.extendObstacles(thr, 13));
-        drawPointCrossings(crossings);
+        crossings = PointCrossing.unconcentrateCrossings(crossings, 11, thr.length, thr[0].length);
+        
+        // drawing extended
+        drawExtended(extended);
+        
+        // crossings.setSize(50);
+        drawPointCrossings(PointCrossing.filterBadCrossings(crossings, extended));
+        
+        // temp >>>
+        // crossings = PointCrossing.filterBadCrossings(crossings, extended);
+
+        ci.ZoomDoubleXY();//ci.ZoomDoubleXY();
+        // drawPointCrossings(crossings);
         return ci;
     }
 
@@ -74,6 +85,35 @@ public class PathDrawer {
             drawCircle(crossing.getPoint1(), Color.blue, 4);
             drawCircle(crossing.getPoint2(), Color.blue, 4);
             drawCircle(crossing.getCrossing(), Color.red, 4);
+        }
+    }
+
+    private void drawPointCrossingsV1(Vector<PointCrossing> points) {
+        for (int i = 0; i < points.size(); i++) {
+            PointCrossing crossing = points.get(i);
+            drawCircle(crossing.getPoint1(), Color.blue, 4);
+            drawCircle(crossing.getPoint2(), Color.blue, 4);
+            drawCircle(crossing.getCrossing(), Color.red, 4);
+            drawLine(crossing.getPoint1(), crossing.getPoint2());
+        }
+    }
+
+    private void drawLine(Point point1, Point point2) {
+        Vector<Point> line = ImProcUtils.bresenhamLine(point1, point2);
+        for (int i = 0; i < line.size(); i++) {
+            Point p = line.get(i);
+            ci.cor(p.x, p.y, Color.yellow);
+        }
+    }
+
+    private void drawExtended(boolean[][] extended) {
+        for (int i = 0; i < extended.length; i++) {
+            for (int j = 0; j < extended[i].length; j++) {
+                boolean b = extended[i][j];
+                if (b){
+                    ci.cor(i, j, Color.black);
+                }
+            }
         }
     }
 }
