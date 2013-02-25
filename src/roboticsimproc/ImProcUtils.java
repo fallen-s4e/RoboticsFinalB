@@ -111,12 +111,13 @@ public class ImProcUtils {
             if (x0 > x1) { return bresenhamLine(p2, p1); }
             double deltaerr = Math.abs(((double)deltay) / ((double)deltax));
             // note that this division needs to be done in a way that preserves the fractional part
-            int y = Math.min(y0, y1);
+            int y = y0;
+            int yStep = y0<y1?1:-1;
             for (int x = x0; x <= x1; x++) {
                 v.add(new Point(x, y));
                 error += deltaerr;
                 if (error >= 0.5) {
-                    y++;
+                    y+=yStep;
                     error = error - 1.0;
                 }
             }
@@ -124,12 +125,13 @@ public class ImProcUtils {
             if (y0 > y1) { return bresenhamLine(p2, p1); }
             double deltaerr = Math.abs(((double)deltax) / ((double)deltay));
             // note that this division needs to be done in a way that preserves the fractional part
-            int x = Math.min(x0, x1);
+            int x = x0;
+            int xStep = x0<x1?1:-1;
             for (int y = y0; y <= y1; y++) {
                 v.add(new Point(x, y));
                 error += deltaerr;
                 if (error >= 0.5) {
-                    x++;
+                    x += xStep;
                     error = error - 1.0;
                 }
             }
