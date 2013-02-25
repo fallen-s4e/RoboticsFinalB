@@ -28,7 +28,7 @@ public class Main {
     private cImageZoom ci;
     private IThresholder thresholder = new ThresholderSimple(90);
     private GraphFactory grMaker = new GraphFactory();
-    private IPathFinder<Point> pf = new PathFinderDummy<Point>(3);
+    private IPathFinder<Point> pf = new PathFinderDummy<Point>(30);
     
     /**
      * entry point here
@@ -62,8 +62,8 @@ public class Main {
         // path drawing
         Vector<Point> nodes = PointCrossing.justCrossigns(crossings);
         IGraph<Point> gr =
-                grMaker.makeSparseGraph(nodes, extended.length, 
-                extended[0].length, ImProcUtils.MIN_EUCLID_DISTANCE*1.8); // almost 2 euclidian dist
+                grMaker.makeSparseGraphBestKNeighbours(nodes, extended.length, 
+                extended[0].length, 7); // almost 2 euclidian dist
         Point start = new Point(90, 250);
         Point closest = ImProcUtils.findClosestEucl(start, nodes);
         gr.addNode(start);
