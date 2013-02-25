@@ -107,6 +107,17 @@ public class ImProcUtils {
         }
         return bestP;
     }
+    
+    public static boolean isObstacleBetweenPoints(Point p1, Point p2, 
+            boolean[][] obstacles) {
+        Vector<Point> line = bresenhamLine(p1, p2);
+        for (int i = 0; i < line.size(); i++) {
+            if (obstacles[line.get(i).x][line.get(i).y]) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     //<editor-fold defaultstate="collapsed" desc="bresenham algo">
     public static Vector<Point> bresenhamLine(Point p1, Point p2) {

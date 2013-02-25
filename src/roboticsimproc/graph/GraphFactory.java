@@ -37,11 +37,16 @@ public class GraphFactory {
         return gr;
     }
 
+    public IGraph<Point> makeSparseGraphBestKNeighbours(Vector<Point> points,
+            int w, int h, int k) {
+        return makeSparseGraphBestKNeighbours(points, w, h, k, null);
+    }
+
     /**
      * k should not be large affects performance linearly
      */
     public IGraph<Point> makeSparseGraphBestKNeighbours(Vector<Point> points,
-            int w, int h, int k) {
+            int w, int h, int k, boolean[][] theshold) {
         GraphSparse<Point> gr = new GraphSparse<Point>();
         for (int i = 0; i < points.size(); i++) {
             Vector<Point> bestNeighbours = new Vector<Point>();
@@ -50,14 +55,20 @@ public class GraphFactory {
                 if (i != j) {
                     Point c2 = points.get(j);
                     if (bestNeighbours.size() < k) {
-                        bestNeighbours.add(c2);
+                        if (theshold == null || // no threshold supported
+                                (!ImProcUtils.isObstacleBetweenPoints(c1, c2, theshold))) {
+                            bestNeighbours.add(c2);
+                        }
                     } else {
                         //trying to replace worse neighbour
                         for (int l = 0; l < bestNeighbours.size(); l++) {
                             if (ImProcUtils.euclideanDistance(c1, c2)
                                     < ImProcUtils.euclideanDistance(c1, bestNeighbours.get(l))) {
-                                bestNeighbours.set(l, c2);
-                                break;
+                                if (theshold == null
+                                        || !ImProcUtils.isObstacleBetweenPoints(c1, c2, theshold)) {
+                                    bestNeighbours.set(l, c2);
+                                    break;
+                                }
                             }
                         }
                     }

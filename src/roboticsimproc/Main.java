@@ -63,7 +63,7 @@ public class Main {
         Vector<Point> nodes = PointCrossing.justCrossigns(crossings);
         IGraph<Point> gr =
                 grMaker.makeSparseGraphBestKNeighbours(nodes, extended.length, 
-                extended[0].length, 7); // almost 2 euclidian dist
+                extended[0].length, 7, thr); // almost 2 euclidian dist
         Point start = new Point(90, 250);
         Point closest = ImProcUtils.findClosestEucl(start, nodes);
         gr.addNode(start);
