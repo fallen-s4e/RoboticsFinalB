@@ -11,9 +11,8 @@ import java.awt.EventQueue;
 import java.awt.Point;
 import java.util.Vector;
 import roboticsimproc.PointCrossing;
-import roboticsimproc.graph.GraphMakerSparseInRadius;
+import roboticsimproc.graph.GraphFactory;
 import roboticsimproc.graph.IGraph;
-import roboticsimproc.graph.IGraphMaker;
 import roboticsimproc.graph.pathfinder.IPathFinder;
 import roboticsimproc.graph.pathfinder.PathFinderDummy;
 import roboticsimproc.lectures.CImage;
@@ -28,7 +27,7 @@ public class PathDrawer {
 
     private cImageZoom ci;
     private IThresholder thresholder = new ThresholderSimple(90);
-    private IGraphMaker grMaker = new GraphMakerSparseInRadius(30);
+    private GraphFactory grMaker = new GraphFactory();
     private IPathFinder<PointCrossing> pf = new PathFinderDummy<PointCrossing>(3);
 
     public PathDrawer(cImageZoom ci) {
@@ -82,7 +81,8 @@ public class PathDrawer {
         
         // path drawing
         IGraph<PointCrossing> gr =
-                grMaker.makeGraph(crossings, extended.length, extended[0].length);
+                grMaker.makeSparseGraph(crossings, extended.length, 
+                extended[0].length, ImProcUtils.MIN_EUCLID_DISTANCE*1.8); // almost 2 euclidian dist
         drawPath(pf.findPath(gr, crossings.get(0)));
 
         ci.ZoomDoubleXY();//ci.ZoomDoubleXY();

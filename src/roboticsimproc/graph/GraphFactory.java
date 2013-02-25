@@ -12,16 +12,13 @@ import roboticsimproc.PointCrossing;
  *
  * @author fallen
  */
-public class GraphMakerSparseInRadius implements IGraphMaker{
+public class GraphFactory {
     
-    private final double maxRadius;
-
-    public GraphMakerSparseInRadius(double maxRadius) {
-        this.maxRadius = maxRadius;
+    public GraphFactory() {
     }
 
-    @Override
-    public IGraph<PointCrossing> makeGraph(Vector<PointCrossing> crossings, int w, int h) {
+    public IGraph<PointCrossing> makeSparseGraph(Vector<PointCrossing> crossings, 
+       int w, int h, double maxRadius) {
         GraphSparse<PointCrossing> gr = new GraphSparse<PointCrossing>();
         for (int i = 0; i < crossings.size(); i++) {
             for (int j = 0; j < crossings.size(); j++) {
