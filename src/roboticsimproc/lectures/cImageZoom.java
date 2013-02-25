@@ -25,6 +25,7 @@ public class cImageZoom extends CImage {
         vista.add(p);
         vista.setVisible(true);
         vista.repaint();
+        vista.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     public cImageZoom(int w, int h) {
