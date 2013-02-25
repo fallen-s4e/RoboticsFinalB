@@ -97,6 +97,16 @@ public class ImProcUtils {
         double dy = p1.y - p2.y;
         return Math.sqrt(dx * dx + dy * dy);
     }
+    
+    public static Point findClosestEucl(Point p, Vector<Point> ps) {
+        Point bestP = ps.get(0);
+        for (int i = 0; i < ps.size(); i++) {
+            if (euclideanDistance(bestP, p) > euclideanDistance(bestP, ps.get(i))) {
+                bestP = ps.get(i);
+            }
+        }
+        return bestP;
+    }
 
     //<editor-fold defaultstate="collapsed" desc="bresenham algo">
     public static Vector<Point> bresenhamLine(Point p1, Point p2) {

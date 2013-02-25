@@ -64,8 +64,14 @@ public class Main {
         IGraph<Point> gr =
                 grMaker.makeSparseGraph(nodes, extended.length, 
                 extended[0].length, ImProcUtils.MIN_EUCLID_DISTANCE*1.8); // almost 2 euclidian dist
-        drawPath(pf.findPath(gr, nodes.get(0)));
-
+        Point start = new Point(90, 250);
+        Point closest = ImProcUtils.findClosestEucl(start, nodes);
+        gr.addNode(start);
+        gr.addRelation(start, closest, 0);
+        
+        drawPath(pf.findPath(gr, start));
+        drawCircle(start, Color.CYAN, 4);
+        
         ci.ZoomDoubleXY();//ci.ZoomDoubleXY();
         // drawPointCrossings(crossings);
         return ci;
