@@ -7,6 +7,7 @@ package roboticsimproc;
 import roboticsimproc.threshold.IThresholder;
 import roboticsimproc.threshold.ThresholderSimple;
 import java.awt.Color;
+import java.awt.EventQueue;
 import java.awt.Point;
 import java.util.Vector;
 import roboticsimproc.PointCrossing;
@@ -87,6 +88,16 @@ public class PathDrawer {
         ci.ZoomDoubleXY();//ci.ZoomDoubleXY();
         // drawPointCrossings(crossings);
         return ci;
+    }
+    
+    public static void main(String[] args) {
+        EventQueue.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                new PathDrawer(new cImageZoom("trackPhotos/foto1.jpg")).run();
+            }
+        });
     }
 
     private void drawPoints(Vector<Point> points, Color color, int thickness) {
