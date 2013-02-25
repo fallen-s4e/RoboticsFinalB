@@ -45,7 +45,7 @@ public class Main {
 
             @Override
             public void run() {
-                new PathDrawer(new cImageZoom("trackPhotos/foto1.jpg")).drawPath();
+                new PathDrawer(new cImageZoom("trackPhotos/foto1.jpg")).run();
             }
             
         });

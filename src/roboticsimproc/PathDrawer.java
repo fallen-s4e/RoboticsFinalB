@@ -13,6 +13,8 @@ import roboticsimproc.PointCrossing;
 import roboticsimproc.graph.GraphMakerSparseInRadius;
 import roboticsimproc.graph.IGraph;
 import roboticsimproc.graph.IGraphMaker;
+import roboticsimproc.graph.pathfinder.IPathFinder;
+import roboticsimproc.graph.pathfinder.PathFinderDummy;
 import roboticsimproc.lectures.CImage;
 import roboticsimproc.lectures.cImageZoom;
 import sun.dc.pr.PathFiller;
@@ -26,6 +28,7 @@ public class PathDrawer {
     private cImageZoom ci;
     private IThresholder thresholder = new ThresholderSimple(90);
     private IGraphMaker grMaker = new GraphMakerSparseInRadius(30);
+    private IPathFinder<PointCrossing> pf = new PathFinderDummy<PointCrossing>(3);
 
     public PathDrawer(cImageZoom ci) {
         this.ci = ci;
@@ -52,7 +55,7 @@ public class PathDrawer {
      *
      * @return
      */
-    public CImage drawPath() {
+    public CImage run() {
         boolean[][] thr = ImProcUtils.inversedThreshold(thresholder.threshold(ci));
         boolean[][] extended = ImProcUtils.extendObstacles(thr, 13);
         Vector<Point> points = ImProcUtils.getFirstRandomPoints(thr, 1000);
@@ -64,18 +67,22 @@ public class PathDrawer {
 
         // drawing points crossing
         crossings = PointCrossing.unconcentrateCrossings(crossings, 11, thr.length, thr[0].length);
-        
+
         // drawing extended
         drawExtended(extended);
-        
+
         // crossings.setSize(50);
         System.out.println("crossings.size() = " + crossings.size());
         crossings = PointCrossing.filterBadCrossings(crossings, extended);
         System.out.println("crossings.size() = " + crossings.size());
         drawPointCrossings(crossings);
-        
         // temp >>>
         // crossings = PointCrossing.filterBadCrossings(crossings, extended);
+        
+        // path drawing
+        IGraph<PointCrossing> gr =
+                grMaker.makeGraph(crossings, extended.length, extended[0].length);
+        drawPath(pf.findPath(gr, crossings.get(0)));
 
         ci.ZoomDoubleXY();//ci.ZoomDoubleXY();
         // drawPointCrossings(crossings);
@@ -119,10 +126,21 @@ public class PathDrawer {
         for (int i = 0; i < extended.length; i++) {
             for (int j = 0; j < extended[i].length; j++) {
                 boolean b = extended[i][j];
-                if (b){
+                if (b) {
                     ci.cor(i, j, Color.black);
                 }
             }
+        }
+    }
+
+    private void drawPath(Vector<PointCrossing> path) {
+        if (path.size() < 2) {
+            return;
+        }
+        PointCrossing prev = path.get(0);
+        for (int i = 1; i < path.size(); i++) {
+            drawLine(prev.getCrossing(), path.get(i).getCrossing());
+            prev = path.get(i);
         }
     }
 }
