@@ -6,24 +6,38 @@ package roboticsimproc;
 
 import java.awt.Point;
 import java.lang.reflect.Array;
-import java.util.Vector;
+import java.util.*;
 
 /**
  *
  * @author fallen
  */
 public class PointCrossing {
-
-
+    
     //<editor-fold desc="non static" defaultstate="collapsed">
     private final Point point1;
     private final Point point2;
     private final Point crossing;
+    private Point closestObstacle = null;
+    private final Vector<Point> points;
 
-    public PointCrossing(Point point1, Point point2) {
+    public PointCrossing(Point point1, Point point2, Vector<Point> points) {
         this.point1 = point1;
         this.point2 = point2;
         this.crossing = new Point((point1.x + point2.x) / 2, (point1.y + point2.y) / 2);
+        this.points = points;
+    }
+
+    /** lazy method */
+    public Point getClosestObstacle() {
+        if (closestObstacle == null) {
+            closestObstacle = ImProcUtils.findClosestEucl(crossing, points);
+        }
+        return closestObstacle;
+    }
+    
+    public double getClosestObstacleD() {
+        return ImProcUtils.euclideanDistance(crossing, getClosestObstacle());
     }
 
     public Point getCrossing() {
@@ -69,7 +83,7 @@ public class PointCrossing {
             for (int j = i + 1; j < points.size(); j++) {
                 Point p1 = points.get(i);
                 Point p2 = points.get(j);
-                PointCrossing pc = new PointCrossing(p1, p2);
+                PointCrossing pc = new PointCrossing(p1, p2, points);
                 if (!extended[pc.crossing.x][pc.crossing.y]) {
                     res.add(pc);
                 }
@@ -122,7 +136,7 @@ public class PointCrossing {
         Vector<Point> pointsOnPath = ImProcUtils.bresenhamLine(pc.point1, pc.point2);
 
         int n = pointsOnPath.size();
-        double blindZone = 0.40;
+        double blindZone = 0.40; // the zone which is not checked. 0.5 is a fully blind
         for (int i = (int) (n*blindZone); i < n*(1-blindZone); i++) {
             Point p = pointsOnPath.get(i);
             if (thr[p.x][p.y]) {
@@ -138,6 +152,53 @@ public class PointCrossing {
             v.add(pc.getCrossing());
         }
         return v;
+    }
+
+    public static Vector<PointCrossing> improveCrossings(
+            Vector<PointCrossing> crossings) {
+        Set<PointCrossing> badPoints = new HashSet<PointCrossing>();
+        for (int i = 0; i < crossings.size(); i++) {
+            PointCrossing pc = crossings.get(i);
+            if (badPoints.contains(pc)) {
+                continue;
+            }
+            double minDist = pc.getClosestObstacleD();
+            double radius = 0.4*minDist; // radius to search in
+            
+            // getting neighbours in a radius
+            Vector<PointCrossing> neighbours = new Vector<PointCrossing>();
+            for (int j = 0; j < crossings.size(); j++) {
+                PointCrossing pc1 = crossings.get(j);
+                if (pc1 != pc && ImProcUtils.euclideanDistance(
+                        pc.getCrossing(), pc1.getCrossing()) <= radius) {
+                    neighbours.add(pc1);
+                }
+            }
+            System.out.println("neighbours.size() = " + neighbours.size());
+            
+            // getting the best neighbours amoung them
+            Vector<PointCrossing> worstNeighbours = new Vector<PointCrossing>(neighbours.size());
+            worstNeighbours.setSize(neighbours.size());
+            Collections.copy(worstNeighbours, neighbours);
+            int numBestPoints = (int) (worstNeighbours.size()/1.2);///(int)Math.sqrt(worstNeighbours.size());
+            Collections.sort(worstNeighbours, new Comparator<PointCrossing>() {
+
+                @Override
+                public int compare(PointCrossing pc1, PointCrossing pc2) {
+                    return (int)(pc2.getClosestObstacleD() - pc1.getClosestObstacleD());
+                }
+            });
+            worstNeighbours.setSize(Math.min(worstNeighbours.size(), 
+                    worstNeighbours.size() - numBestPoints));
+            badPoints.addAll(worstNeighbours);
+            
+            System.out.println("worstNeighbours.size() = " + worstNeighbours.size());
+        }
+        
+        Vector<PointCrossing> res = new Vector<PointCrossing>();
+        res.addAll(crossings);
+        res.removeAll(badPoints);
+        return res;
     }
     //</editor-fold>
 }

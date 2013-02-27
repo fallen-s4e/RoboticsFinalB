@@ -16,6 +16,5 @@ import roboticsimproc.lectures.CImage;
  * @author fallen
  */
 public interface IThresholder {
-
     public boolean[][] threshold(CImage ci);
 }

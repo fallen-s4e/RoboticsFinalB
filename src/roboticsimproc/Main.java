@@ -14,6 +14,7 @@ import roboticsimproc.PointCrossing;
 import roboticsimproc.graph.GraphFactory;
 import roboticsimproc.graph.IGraph;
 import roboticsimproc.graph.pathfinder.IPathFinder;
+import roboticsimproc.graph.pathfinder.PathFinderDijkstraPoint;
 import roboticsimproc.graph.pathfinder.PathFinderDummy;
 import roboticsimproc.lectures.CImage;
 import roboticsimproc.lectures.cImageZoom;
@@ -28,7 +29,7 @@ public class Main {
     private cImageZoom ci;
     private IThresholder thresholder = new ThresholderSimple(90);
     private GraphFactory grMaker = new GraphFactory();
-    private IPathFinder<Point> pf = new PathFinderDummy<Point>(30);
+    private IPathFinder<Point> pf = new PathFinderDijkstraPoint();//new PathFinderDummy<Point>(30);
     
     /**
      * entry point here
@@ -38,7 +39,7 @@ public class Main {
     public CImage run() {
         boolean[][] thr = ImProcUtils.inversedThreshold(thresholder.threshold(ci));
         boolean[][] extended = ImProcUtils.extendObstacles(thr, 13);
-        Vector<Point> points = ImProcUtils.getFirstRandomPoints(thr, 1000);
+        Vector<Point> points = ImProcUtils.getFirstRandomPoints(thr, 1000); // actually can use less it still remains correct
         points.addAll(ImProcUtils.getCornerObstacles(thr));
         Vector<PointCrossing> crossings = PointCrossing.pointCrossings(points, thr);
 
@@ -47,6 +48,8 @@ public class Main {
 
         // drawing points crossing
         crossings = PointCrossing.unconcentrateCrossings(crossings, 11, thr.length, thr[0].length);
+        System.out.println("crossings.size() = " + crossings.size());
+        // crossings = PointCrossing.improveCrossings(crossings); // should fix it before using
 
         // drawing extended
         drawExtended(extended);
@@ -64,7 +67,7 @@ public class Main {
         IGraph<Point> gr =
                 grMaker.makeSparseGraphBestKNeighbours(nodes, extended.length, 
                 extended[0].length, 7, thr, 30); // almost 2 euclidian dist
-        Point start = new Point(90, 250);
+        Point start = new Point(140, 280);
         Point closest = ImProcUtils.findClosestEucl(start, nodes);
         gr.addNode(start);
         gr.addRelation(start, closest, 0);
