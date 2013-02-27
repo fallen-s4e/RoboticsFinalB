@@ -37,10 +37,53 @@ public class Main {
     
     /**
      * entry point here
-     *
-     * @return
      */
     public CImage run() {
+        boolean[][] thr = ImProcUtils.inversedThreshold(thresholder.threshold(ci));
+        boolean[][] extended = ImProcUtils.extendObstacles(thr, 4);
+        Vector<Point> obstacles = ImProcUtils.getFirstRandomPoints(thr, 1000); // actually can use less it still remains correct
+        obstacles.addAll(ImProcUtils.getCornerObstacles(thr));
+        Vector<PointCrossing> crossings = PointCrossing.pointCrossings(obstacles, thr);
+
+        // drawing just point
+        // drawPoints(points, Color.blue, 2);
+
+        // drawing points crossing
+        crossings = PointCrossing.unconcentrateCrossings(crossings, 11, thr.length, thr[0].length);
+        System.out.println("crossings.size() = " + crossings.size());
+        // crossings = PointCrossing.improveCrossings(crossings); // should fix it before using
+
+        // drawing extended
+
+        // crossings.setSize(50);
+        System.out.println("crossings.size() = " + crossings.size());
+        crossings = PointCrossing.filterBadCrossings(crossings, extended);
+        System.out.println("crossings.size() = " + crossings.size());
+        // temp >>>
+        // crossings = PointCrossing.filterBadCrossings(crossings, extended);
+        
+        // path drawing
+        Vector<Point> nodes = PointCrossing.justCrossigns(crossings);
+        IGraph<Point> gr =
+                grMaker.makeSparseGraphBestKNeighbours(nodes, extended.length, 
+                extended[0].length, 7, thr, 30); // almost 2 euclidian dist
+        Point start = new Point(140, 280);
+        Point closest = ImProcUtils.findClosestEucl(start, nodes);
+        gr.addNode(start);
+        gr.addRelation(start, closest, 0);
+        
+        drawPath(pf.findPath(gr, start, obstacles));
+        drawCircle(start, Color.CYAN, 4);
+        
+        ci.ZoomDoubleXY();//ci.ZoomDoubleXY();
+        // drawPointCrossings(crossings);
+        return ci;
+    }
+    
+        /**
+     * entry point here
+     */
+    public CImage runVerbose() {
         boolean[][] thr = ImProcUtils.inversedThreshold(thresholder.threshold(ci));
         boolean[][] extended = ImProcUtils.extendObstacles(thr, 4);
         Vector<Point> obstacles = ImProcUtils.getFirstRandomPoints(thr, 1000); // actually can use less it still remains correct
@@ -83,7 +126,7 @@ public class Main {
         // drawPointCrossings(crossings);
         return ci;
     }
-    
+
     //<editor-fold defaultstate="collapsed" desc="static main and constructors">
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -114,7 +157,7 @@ public class Main {
             PointCrossing crossing = points.get(i);
             drawCircle(crossing.getPoint1(), Color.blue, 4);
             drawCircle(crossing.getPoint2(), Color.blue, 4);
-            drawCircle(crossing.getCrossing(), Color.red, 4);
+            drawCircle(crossing.getCrossing(), Color.yellow, 4);
         }
     }
 
@@ -123,7 +166,7 @@ public class Main {
             PointCrossing crossing = points.get(i);
             drawCircle(crossing.getPoint1(), Color.blue, 4);
             drawCircle(crossing.getPoint2(), Color.blue, 4);
-            drawCircle(crossing.getCrossing(), Color.red, 4);
+            drawCircle(crossing.getCrossing(), Color.yellow, 4);
             drawLine(crossing.getPoint1(), crossing.getPoint2());
         }
     }
@@ -132,7 +175,7 @@ public class Main {
         Vector<Point> line = ImProcUtils.bresenhamLine(point1, point2);
         for (int i = 0; i < line.size(); i++) {
             Point p = line.get(i);
-            ci.cor(p.x, p.y, Color.yellow);
+            ci.cor(p.x, p.y, Color.red);
         }
     }
 

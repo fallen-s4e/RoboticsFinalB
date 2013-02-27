@@ -94,8 +94,8 @@ public class PathFinderDijkstraPoint implements IPathFinder<Point> {
 
     private double stepPrice(IGraph<Point> gr,
             Point curNode, Point node, Vector<Point> osbt) {
-        double coef1 = 5.5;
-        double coef2 = 0.5;
+        double coef1 = 0.5;
+        double coef2 = 5.5;
         double v1 = gr.relationPrice(curNode, node);
         double v2 = ImProcUtils.findClosestEuclD(node, osbt);
         double v = coef1 * v1 + coef2 * (Math.sqrt(v2));
