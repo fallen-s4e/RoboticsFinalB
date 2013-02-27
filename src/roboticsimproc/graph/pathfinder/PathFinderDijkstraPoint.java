@@ -28,8 +28,8 @@ public class PathFinderDijkstraPoint implements IPathFinder<Point> {
             }
             int bestIdx = 0;
             for (int i = 1; i < neighbours.size(); i++) {
-                if (stepPrice(gr, k, res, curNode, neighbours.get(bestIdx)) <
-                        stepPrice(gr, k, res, curNode, neighbours.get(i))) {
+                if (stepPrice(gr, k, res, curNode, neighbours.get(bestIdx), osbt)
+                        < stepPrice(gr, k, res, curNode, neighbours.get(i), osbt)) {
                     bestIdx = i;
                 }
             }
@@ -38,21 +38,24 @@ public class PathFinderDijkstraPoint implements IPathFinder<Point> {
         }
         return res;
     }
-    
-    private double stepPrice(IGraph<Point> gr, int k, Vector<Point> previousVals, 
-            Point curNode, Point node) {
-        double coef = 0.8;
-        double v = coef*gr.relationPrice(curNode, node) +
-                        (1-coef)*previousKNodesPrice(k, previousVals, curNode);
+
+    private double stepPrice(IGraph<Point> gr, int k, Vector<Point> previousVals,
+            Point curNode, Point node, Vector<Point> osbt) {
+        double coef1 = 0.3;
+        double coef2 = 0.3;
+        double coef3 = 10;
+        double v = coef1 * gr.relationPrice(curNode, node)
+                + coef2 * previousKNodesPrice(k, previousVals, curNode)
+                + coef3 * (1/ImProcUtils.findClosestEuclD(node, osbt));
         return v;
     }
-    
-    private double previousKNodesPrice(int k, Vector<Point> previousVals, 
+
+    private double previousKNodesPrice(int k, Vector<Point> previousVals,
             Point curVal) {
         double res = 0;
         for (int i = 0; i < k && i < previousVals.size(); i++) {
             double v = ImProcUtils.euclideanDistance(previousVals.get(i), curVal);
-            res += (v*v);
+            res += (v * v);
         }
         return res;
     }

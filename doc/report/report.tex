@@ -19,8 +19,6 @@
 
 The first task that we did is thresholding image. We have a colored image as an input and to calculate a path we need to deal with binary image. So firstly we converted the image to grayscale and then to binary. It is done in 2 classes: ThresholderSimple and ThresholderOtsu. The first class just does threshhold with some constant value. Value should be between 0 and 255. each point is true if average value of blue, green and red component is more than a treshold. The second classes uses the first one. First it calculate a theshold using Otsu method and pass a result to the first class.
 
-Otsu method is: FIXME.
-
 The interface has only one method:
 
     public boolean[][] threshold(CImage ci)
@@ -53,7 +51,9 @@ After we have unconcentrated points we wanted to exclude points on obstacles. fi
 
 \section{Graph Building, Building}
 
-At this point we have point and we need a graph to find the path in.
+At this point we have point and we need a graph to find the path in. Each vertex in a graph has adjacencies with vertexes which is around the vertex. Around mean that euclidean distance between point is low. In that case number of edge is less than squared number of vertexes. That is why we need sparsed version of the graph. The interface and an implementation of the graph described in files IGraph and GraphSparse respectively.
+
+After we build a graph we need to join starting point - starting point of the Robot and the closest vertex. After this is done we are trying to find path using IPathFinder class, IPathFinder method.
 
 
 \bibliographystyle{abbrv}

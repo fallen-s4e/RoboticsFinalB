@@ -109,6 +109,10 @@ public class ImProcUtils {
         }
         return bestP;
     }
+    
+    public static double findClosestEuclD(Point p, Vector<Point> ps) {
+        return euclideanDistance(p, findClosestEucl(p, ps));
+    }
 
     public static boolean isObstacleBetweenPoints(Point p1, Point p2,
             boolean[][] obstacles) {
