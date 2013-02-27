@@ -90,7 +90,9 @@ public class Main {
 
             @Override
             public void run() {
-                new Main(new cImageZoom("trackPhotos/foto1_bkp.jpg")).run();
+                for (int i = 1; i < 5; i++) {
+                    new Main(new cImageZoom("trackPhotos/foto"+i+".jpg")).run();
+                }
             }
         });
     }

@@ -21,11 +21,13 @@ public class PathFinderDijkstraPoint implements IPathFinder<Point> {
             res.add(to);
             to = bestPath.get(to);
         }
+        Collections.reverse(res);
         return res;
     }
     
     @Override
-    public Vector<Point> findPath(final IGraph<Point> gr, Point startingNode, Vector<Point> osbt) {
+    public Vector<Point> findPath(final IGraph<Point> gr, Point startingNode, 
+                 final Vector<Point> obst) {
         Map<Point, Double> bestPriceUnvis = new HashMap();
         Map<Point, Point> bestPath = new HashMap();
         Map<Point, Double> visited = new HashMap(); // visited
@@ -59,6 +61,8 @@ public class PathFinderDijkstraPoint implements IPathFinder<Point> {
 
                 @Override
                 public int compare(Point p1, Point p2) {
+                    // return (int) (gr.relationPrice(curPoint, p2) - gr.relationPrice(curPoint, p1));
+                    stepPrice(gr, curPoint, p2, obst);
                     return (int) (gr.relationPrice(curPoint, p2) - 
                             gr.relationPrice(curPoint, p1));
                 }
@@ -87,48 +91,14 @@ public class PathFinderDijkstraPoint implements IPathFinder<Point> {
         
         return getPath(startingNode, p, bestPath);
     }
-    
-    public Vector<Point> findPath1(IGraph<Point> gr, Point startingNode, Vector<Point> osbt) {
-        int k = 10;
-        Vector<Point> res = new Vector<Point>();
-        Point curNode = startingNode;
-        res.add(curNode);
-        for (int j = 0; j < 120; j++) {
-            Vector<Point> neighbours = gr.relatedWith(curNode);
-            if (neighbours == null || neighbours.size() == 0) {
-                return res;
-            }
-            int bestIdx = 0;
-            for (int i = 1; i < neighbours.size(); i++) {
-                if (stepPrice(gr, k, res, curNode, neighbours.get(bestIdx), osbt)
-                        < stepPrice(gr, k, res, curNode, neighbours.get(i), osbt)) {
-                    bestIdx = i;
-                }
-            }
-            curNode = neighbours.get(bestIdx);
-            res.add(curNode);
-        }
-        return res;
-    }
 
-    private double stepPrice(IGraph<Point> gr, int k, Vector<Point> previousVals,
+    private double stepPrice(IGraph<Point> gr,
             Point curNode, Point node, Vector<Point> osbt) {
-        double coef1 = 0.3;
-        double coef2 = 0.3;
-        double coef3 = 10;
-        double v = coef1 * gr.relationPrice(curNode, node)
-                + coef2 * previousKNodesPrice(k, previousVals, curNode)
-                + coef3 * (1/ImProcUtils.findClosestEuclD(node, osbt));
+        double coef1 = 5.5;
+        double coef2 = 0.5;
+        double v1 = gr.relationPrice(curNode, node);
+        double v2 = ImProcUtils.findClosestEuclD(node, osbt);
+        double v = coef1 * v1 + coef2 * (Math.sqrt(v2));
         return v;
-    }
-
-    private double previousKNodesPrice(int k, Vector<Point> previousVals,
-            Point curVal) {
-        double res = 0;
-        for (int i = 0; i < k && i < previousVals.size(); i++) {
-            double v = ImProcUtils.euclideanDistance(previousVals.get(i), curVal);
-            res += (v * v);
-        }
-        return res;
     }
 }
