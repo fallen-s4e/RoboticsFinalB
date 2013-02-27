@@ -18,6 +18,7 @@ import roboticsimproc.graph.pathfinder.PathFinderDijkstraPoint;
 import roboticsimproc.graph.pathfinder.PathFinderDummy;
 import roboticsimproc.lectures.CImage;
 import roboticsimproc.lectures.cImageZoom;
+import roboticsimproc.threshold.ThresholderOtsu;
 import sun.dc.pr.PathFiller;
 
 /**
@@ -27,7 +28,7 @@ import sun.dc.pr.PathFiller;
 public class Main {
 
     private cImageZoom ci;
-    private IThresholder thresholder = new ThresholderSimple(90);
+    private IThresholder thresholder = new ThresholderOtsu();//was simple 90
     private GraphFactory grMaker = new GraphFactory();
     private IPathFinder<Point> pf = new PathFinderDijkstraPoint();//new PathFinderDummy<Point>(30);
     
@@ -38,7 +39,7 @@ public class Main {
      */
     public CImage run() {
         boolean[][] thr = ImProcUtils.inversedThreshold(thresholder.threshold(ci));
-        boolean[][] extended = ImProcUtils.extendObstacles(thr, 13);
+        boolean[][] extended = ImProcUtils.extendObstacles(thr, 4);
         Vector<Point> points = ImProcUtils.getFirstRandomPoints(thr, 1000); // actually can use less it still remains correct
         points.addAll(ImProcUtils.getCornerObstacles(thr));
         Vector<PointCrossing> crossings = PointCrossing.pointCrossings(points, thr);
@@ -86,7 +87,7 @@ public class Main {
 
             @Override
             public void run() {
-                new Main(new cImageZoom("trackPhotos/foto1.jpg")).run();
+                new Main(new cImageZoom("trackPhotos/foto1_bkp.jpg")).run();
             }
         });
     }

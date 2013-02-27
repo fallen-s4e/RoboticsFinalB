@@ -106,4 +106,8 @@ public class CImage {
             }
         }
     }
+
+    public BufferedImage getrImage() {
+        return rImage;
+    }
 }  // end of class cImage
