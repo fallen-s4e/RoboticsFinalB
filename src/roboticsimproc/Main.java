@@ -43,9 +43,9 @@ public class Main {
     public CImage run() {
         boolean[][] thr = ImProcUtils.inversedThreshold(thresholder.threshold(ci));
         boolean[][] extended = ImProcUtils.extendObstacles(thr, 4);
-        Vector<Point> points = ImProcUtils.getFirstRandomPoints(thr, 1000); // actually can use less it still remains correct
-        points.addAll(ImProcUtils.getCornerObstacles(thr));
-        Vector<PointCrossing> crossings = PointCrossing.pointCrossings(points, thr);
+        Vector<Point> obstacles = ImProcUtils.getFirstRandomPoints(thr, 1000); // actually can use less it still remains correct
+        obstacles.addAll(ImProcUtils.getCornerObstacles(thr));
+        Vector<PointCrossing> crossings = PointCrossing.pointCrossings(obstacles, thr);
 
         // drawing just point
         // drawPoints(points, Color.blue, 2);
@@ -76,7 +76,7 @@ public class Main {
         gr.addNode(start);
         gr.addRelation(start, closest, 0);
         
-        drawPath(pf.findPath(gr, start));
+        drawPath(pf.findPath(gr, start, obstacles));
         drawCircle(start, Color.CYAN, 4);
         
         ci.ZoomDoubleXY();//ci.ZoomDoubleXY();

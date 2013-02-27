@@ -4,6 +4,7 @@
  */
 package roboticsimproc.graph.pathfinder;
 
+import java.awt.Point;
 import java.util.Random;
 import java.util.Vector;
 import roboticsimproc.graph.IGraph;
@@ -21,7 +22,7 @@ public class PathFinderDummy<TNode> implements IPathFinder<TNode> {
     }
     
     @Override
-    public Vector<TNode> findPath(IGraph<TNode> gr, TNode startingNode) {
+    public Vector<TNode> findPath(IGraph<TNode> gr, TNode startingNode, Vector<Point> osbt) {
         Vector<TNode> res = new Vector<TNode>();
         res.add(startingNode);
         TNode node = startingNode;

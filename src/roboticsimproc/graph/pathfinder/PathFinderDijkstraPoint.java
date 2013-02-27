@@ -16,7 +16,7 @@ import roboticsimproc.graph.IGraph;
 public class PathFinderDijkstraPoint implements IPathFinder<Point> {
 
     @Override
-    public Vector<Point> findPath(IGraph<Point> gr, Point startingNode) {
+    public Vector<Point> findPath(IGraph<Point> gr, Point startingNode, Vector<Point> osbt) {
         int k = 10;
         Vector<Point> res = new Vector<Point>();
         Point curNode = startingNode;
