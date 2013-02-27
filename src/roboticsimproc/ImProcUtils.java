@@ -97,18 +97,20 @@ public class ImProcUtils {
         double dy = p1.y - p2.y;
         return Math.sqrt(dx * dx + dy * dy);
     }
-    
+
     public static Point findClosestEucl(Point p, Vector<Point> ps) {
         Point bestP = ps.get(0);
         for (int i = 0; i < ps.size(); i++) {
-            if (euclideanDistance(bestP, p) > euclideanDistance(bestP, ps.get(i))) {
-                bestP = ps.get(i);
+            if (ps.get(i) != p) {
+                if (euclideanDistance(bestP, p) > euclideanDistance(bestP, ps.get(i))) {
+                    bestP = ps.get(i);
+                }
             }
         }
         return bestP;
     }
-    
-    public static boolean isObstacleBetweenPoints(Point p1, Point p2, 
+
+    public static boolean isObstacleBetweenPoints(Point p1, Point p2,
             boolean[][] obstacles) {
         Vector<Point> line = bresenhamLine(p1, p2);
         for (int i = 0; i < line.size(); i++) {
@@ -127,28 +129,32 @@ public class ImProcUtils {
         int deltax = (x1 - x0);
         int deltay = (y1 - y0);
         double error = 0;
-        
+
         Vector<Point> v = new Vector<Point>();
         if (Math.abs(deltax) > Math.abs(deltay)) {
-            if (x0 > x1) { return bresenhamLine(p2, p1); }
-            double deltaerr = Math.abs(((double)deltay) / ((double)deltax));
+            if (x0 > x1) {
+                return bresenhamLine(p2, p1);
+            }
+            double deltaerr = Math.abs(((double) deltay) / ((double) deltax));
             // note that this division needs to be done in a way that preserves the fractional part
             int y = y0;
-            int yStep = y0<y1?1:-1;
+            int yStep = y0 < y1 ? 1 : -1;
             for (int x = x0; x <= x1; x++) {
                 v.add(new Point(x, y));
                 error += deltaerr;
                 if (error >= 0.5) {
-                    y+=yStep;
+                    y += yStep;
                     error = error - 1.0;
                 }
             }
         } else {
-            if (y0 > y1) { return bresenhamLine(p2, p1); }
-            double deltaerr = Math.abs(((double)deltax) / ((double)deltay));
+            if (y0 > y1) {
+                return bresenhamLine(p2, p1);
+            }
+            double deltaerr = Math.abs(((double) deltax) / ((double) deltay));
             // note that this division needs to be done in a way that preserves the fractional part
             int x = x0;
-            int xStep = x0<x1?1:-1;
+            int xStep = x0 < x1 ? 1 : -1;
             for (int y = y0; y <= y1; y++) {
                 v.add(new Point(x, y));
                 error += deltaerr;
