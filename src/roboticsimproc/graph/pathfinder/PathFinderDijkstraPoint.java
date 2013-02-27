@@ -15,6 +15,15 @@ import roboticsimproc.graph.IGraph;
  */
 public class PathFinderDijkstraPoint implements IPathFinder<Point> {
 
+    public Vector<Point> getPath(Point from, Point to, Map<Point, Point> bestPath) {
+        Vector<Point> res = new Vector<Point>();
+        while (to != from) {
+            res.add(to);
+            to = bestPath.get(to);
+        }
+        return res;
+    }
+    
     @Override
     public Vector<Point> findPath(final IGraph<Point> gr, Point startingNode, Vector<Point> osbt) {
         Map<Point, Double> bestPriceUnvis = new HashMap();
@@ -24,7 +33,6 @@ public class PathFinderDijkstraPoint implements IPathFinder<Point> {
         Vector<Point> allNodes = gr.listNodes();
         bestPriceUnvis.put(startingNode, 0.0);
         while(visited.size() < allNodes.size()) { // while all is not visited
-            System.out.println("1");
             // find best one
             if (!bestPriceUnvis.keySet().iterator().hasNext()) {
                 break;
@@ -72,19 +80,12 @@ public class PathFinderDijkstraPoint implements IPathFinder<Point> {
         Point p = visited.keySet().iterator().next();
         for (Map.Entry<Point, Double> entry : visited.entrySet()) {
             Point k = entry.getKey();
-            Double v = entry.getValue();
             if (visited.get(k) > visited.get(p)) {
                 p = k;
             }
         }
-        Vector<Point> res = new Vector<Point>();
-        while (p != startingNode) {
-            res.add(p);
-            p = bestPath.get(p);
-        }
         
-        System.out.println("res.size() = " + res.size());
-        return res;
+        return getPath(startingNode, p, bestPath);
     }
     
     public Vector<Point> findPath1(IGraph<Point> gr, Point startingNode, Vector<Point> osbt) {
