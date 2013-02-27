@@ -7,12 +7,14 @@
 
 \documentclass[12pt]{article}
 
+\usepackage{listings}
+
 \begin{document}
 
 \maketitle
 
 \begin{abstract}
-  
+
 \end{abstract}
 
 \section{Image Preprocessing}
@@ -35,13 +37,13 @@ So the method tries to expand limits and if limits that it tries to expand is ou
 
 There are a lot of pixel of obstacles. We take randomly first 1000 points and consider them as corners using function getFirstRandomPoints. Of course we could use Hough transform method to find real corners, but we believe that result would be almost the same or even better using random approach.
 
-We also add 4 fictive points in each corner as corners into our coolection. 
+We also add 4 fictive points in each corner as corners into our coolection.
 
 After that we trying to get all point which located exaclty between 2 corner points for each corner point crossproduct. So if we had 100 corner points we will get 10000 middle points. We use function pointCrossings for that.
 
 These middle points are point we want to use to find the path we are looking for. But the resulting points in some places are very concentrated. That is why we need to reduce number of point but we need not to loose quality. The next function unconcentrateCrossings filter points in specific radius such that after applying this function there will be no two point such that distance between them less or equal than that specific radius.
 
-To calculate distance between two points we always use euclidean distance: 
+To calculate distance between two points we always use euclidean distance:
 
     $\sqrt((x0-x1)^2 + (y0-y1)^2)$
 
@@ -55,6 +57,19 @@ At this point we have point and we need a graph to find the path in. Each vertex
 
 After we build a graph we need to join starting point - starting point of the Robot and the closest vertex. After this is done we are trying to find path using IPathFinder class, IPathFinder method.
 
+To find the path we used Dijkstra algorithm, where distance between vertexes is expressed as follows:
+
+\begin{lstlisting}
+    double v1 = gr.relationPrice(curNode, node);
+    double v2 = ImProcUtils.findClosestEuclD(node, osbt);
+    double v = 0.5 * v1 + 0.5 * (Math.sqrt(v2));
+\end{lstlisting}
+
+So the final result depends on the euclidean distance between point and how far the destination point is to the closest obstacle.
+
+\section{Drawing To Display}
+
+To draw images to the display we used provided functionswhich we found on moodle. All examples provided in the doc folder. In src.jpg black points are all the obstacles, blue points are randomly selected obstacles, yellow points are crossing points - good corssing points and the redline is a path.
 
 \bibliographystyle{abbrv}
 \bibliography{main}
