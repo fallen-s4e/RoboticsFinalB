@@ -17,6 +17,12 @@ public class GraphSparse<TNode> implements IGraph<TNode> {
     private Map<TNode, Map<TNode, Double>> relations =
             new HashMap<TNode, Map<TNode, Double>>();
 
+    /** safe method for getting node, if doesnt exists, creates a new one */
+    private Map<TNode, Double> getRel(TNode node) {
+        addNode(node); // add if it doesn't exists
+        return relations.get(node);
+    }
+
     @Override
     public Vector<TNode> listNodes() {
         return new Vector<TNode>(relations.keySet());
@@ -24,7 +30,7 @@ public class GraphSparse<TNode> implements IGraph<TNode> {
 
     @Override
     public Vector<TNode> relatedWith(TNode node) {
-        return new Vector<TNode>(relations.get(node).keySet());
+        return new Vector<TNode>(getRel(node).keySet());
     }
 
     @Override
