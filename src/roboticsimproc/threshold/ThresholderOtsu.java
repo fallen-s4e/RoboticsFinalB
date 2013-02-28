@@ -120,7 +120,7 @@ public class ThresholderOtsu implements IThresholder {
     }
     //</editor-fold>
 
-    public boolean[][] threshold1(BufferedImage img) {
+    public boolean[][] threshold(BufferedImage img) {
         OtsuThresholder thr = new OtsuThresholder();
         DataBufferByte db = (DataBufferByte) img.getData().getDataBuffer();
 
@@ -130,8 +130,7 @@ public class ThresholderOtsu implements IThresholder {
         return new ThresholderSimple(threshold).threshold(img);
     }
 
-    @Override
-    public boolean[][] threshold(BufferedImage img) {
+    public boolean[][] threshold1(BufferedImage img) {
         
         BufferedImage testedImage = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB);
 
@@ -150,10 +149,9 @@ public class ThresholderOtsu implements IThresholder {
             {0, 0, 0},
             {-1, -2, -1}};
         Integer[][] noise = {
-            {1, 1, 1, 1},
-            {1, 0, 0, 1},
-            {1, 0, 0, 1},
-            {1, 1, 1, 1}};
+            {1, 1, 1},
+            {1, 0, 1},
+            {1, 1, 1}};
 
 //        Roberts filter
 //        Integer[][] kernelX = {{0, 1}, {-1, 0}};
@@ -167,10 +165,10 @@ public class ThresholderOtsu implements IThresholder {
 //        ImageOperations.drawFrame(binarize(convolution(sum, noise)));
 //        ImageIO.write(binarize(convolution(sum, noise)), "bmp", new File("trackPhotos/pohui.bmp"));
 //        ImageOperations.drawFrame(convolution(binarize(sum),noise));
-        return binarize(convolution(sum, noise));
+        return threshold1(convolution(sum, noise));
     }
 
-//<editor-fold defaultstate="collapsed" desc="Binarize">
+    //<editor-fold defaultstate="collapsed" desc="Binarize">
     /**
      * Returns sum of two images Returns null if images has different size
      *

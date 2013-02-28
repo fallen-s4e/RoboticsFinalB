@@ -33,6 +33,8 @@ $x^2 + y^2 < r^2$
 
 So the method tries to expand limits and if limits that it tries to expand is out of bound it ignores it. We need that technique to fill space in obstacles if any.
 
+In order to get rid of noise we also tried to use median filter which is described in function median.
+
 \section{Graph Building, Preparing}
 
 There are a lot of pixel of obstacles. We take randomly first 1000 points and consider them as corners using function getFirstRandomPoints. Of course we could use Hough transform method to find real corners, but we believe that result would be almost the same or even better using random approach.

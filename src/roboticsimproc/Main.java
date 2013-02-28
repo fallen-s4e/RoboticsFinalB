@@ -8,6 +8,7 @@ import roboticsimproc.threshold.IThresholder;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.util.Vector;
 import roboticsimproc.graph.GraphFactory;
 import roboticsimproc.graph.IGraph;
@@ -77,7 +78,8 @@ public class Main {
      * entry point here
      */
     public CImage runVerbose() {
-        boolean[][] thr = ImProcUtils.inversedThreshold(thresholder.threshold(ci.getrImage()));
+        boolean[][] thr = ImProcUtils.inversedThreshold(thresholder.threshold(
+                ImProcUtils.deepCopyImage(ci.getrImage())));
         boolean[][] extended = ImProcUtils.extendObstacles(thr, 4);
         Vector<Point> obstacles = ImProcUtils.getFirstRandomPoints(thr, 1000); // actually can use less it still remains correct
         obstacles.addAll(ImProcUtils.getCornerObstacles(thr));

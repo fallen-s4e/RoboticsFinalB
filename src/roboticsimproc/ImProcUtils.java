@@ -5,6 +5,9 @@
 package roboticsimproc;
 
 import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.util.Random;
 import java.util.Vector;
 import roboticsimproc.lectures.CImage;
@@ -109,9 +112,16 @@ public class ImProcUtils {
         }
         return bestP;
     }
-    
+
     public static double findClosestEuclD(Point p, Vector<Point> ps) {
         return euclideanDistance(p, findClosestEucl(p, ps));
+    }
+
+    public static BufferedImage deepCopyImage(BufferedImage bi) {
+        ColorModel cm = bi.getColorModel();
+        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+        WritableRaster raster = bi.copyData(null);
+        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
     }
 
     public static boolean isObstacleBetweenPoints(Point p1, Point p2,
