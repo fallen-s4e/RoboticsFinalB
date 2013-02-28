@@ -13,17 +13,15 @@
 
 \maketitle
 
-\begin{abstract}
-
-\end{abstract}
-
 \section{Image Preprocessing}
 
 The first task that we did is thresholding image. We have a colored image as an input and to calculate a path we need to deal with binary image. So firstly we converted the image to grayscale and then to binary. It is done in 2 classes: ThresholderSimple and ThresholderOtsu. The first class just does threshhold with some constant value. Value should be between 0 and 255. each point is true if average value of blue, green and red component is more than a treshold. The second classes uses the first one. First it calculate a theshold using Otsu method and pass a result to the first class.
 
 The interface has only one method:
 
-    public boolean[][] threshold(CImage ci)
+\begin{lstlisting}
+  public boolean[][] threshold(CImage ci)
+\end{lstlisting}
 
 In our case obstacles are black and background lighter so we need inverse our array of booleans. We use ImProcUtils.inversedThreshold for this. It just inverse every element of the given array.
 
@@ -71,7 +69,7 @@ So the final result depends on the euclidean distance between point and how far 
 
 \section{Drawing To Display}
 
-To draw images to the display we used provided functionswhich we found on moodle. All examples provided in the doc folder. In src.jpg black points are all the obstacles, blue points are randomly selected obstacles, yellow points are crossing points - good corssing points and the redline is a path.
+To draw images to the display we used provided functions which we found on moodle. All examples provided in the doc folder. In src.jpg black points are all the obstacles, blue points are randomly selected obstacles, yellow points are crossing points - good corssing points and the redline is a path.
 
 \bibliographystyle{abbrv}
 \bibliography{main}
