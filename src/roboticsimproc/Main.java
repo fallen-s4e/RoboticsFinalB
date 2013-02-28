@@ -134,7 +134,7 @@ public class Main {
             @Override
             public void run() {
                 for (int i = 1; i < 5; i++) {
-                    new Main(new cImageZoom("trackPhotos/foto"+i+".jpg")).run();
+                    new Main(new cImageZoom("trackPhotos/foto"+i+".jpg")).runVerbose();
                 }
             }
         });

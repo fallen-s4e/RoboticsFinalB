@@ -120,8 +120,7 @@ public class ThresholderOtsu implements IThresholder {
     }
     //</editor-fold>
 
-    @Override
-    public boolean[][] threshold(CImage ci) {
+    public boolean[][] threshold1(CImage ci) {
         OtsuThresholder thr = new OtsuThresholder();
         BufferedImage img = ci.getrImage();
         DataBufferByte db = (DataBufferByte) img.getData().getDataBuffer();
@@ -132,9 +131,10 @@ public class ThresholderOtsu implements IThresholder {
         return new ThresholderSimple(threshold).threshold(ci);
     }
 
-    private static BufferedImage threshold1(File file) throws IOException {
-
-        BufferedImage img = ImageIO.read(file);
+    @Override
+    public boolean[][] threshold(CImage ci) {
+        
+        BufferedImage img = ci.getrImage();
         BufferedImage testedImage = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB);
 
         //        Default derivative filter
@@ -180,10 +180,10 @@ public class ThresholderOtsu implements IThresholder {
      * @param im2
      * @return
      */
-    public static BufferedImage binarize(BufferedImage image) {
+    public static boolean[][] binarize(BufferedImage image) {
         int h1 = image.getHeight();
         int w1 = image.getWidth();
-        BufferedImage returnImage = new BufferedImage(w1, h1, BufferedImage.TYPE_BYTE_BINARY);
+        boolean[][] returnImage = new boolean[w1][h1];
         for (int x = 0; x < w1; x++) {
             for (int y = 0; y < h1; y++) {
                 Color c1 = new Color(image.getRGB(x, y));
@@ -191,22 +191,7 @@ public class ThresholderOtsu implements IThresholder {
                 int g = c1.getGreen();
                 int b = c1.getBlue();
                 int threshold = 1;
-                if (r > threshold) {
-                    r = 0;
-                } else {
-                    r = 255;
-                }
-                if (g > threshold) {
-                    g = 0;
-                } else {
-                    g = 255;
-                }
-                if (b > threshold) {
-                    b = 0;
-                } else {
-                    b = 255;
-                }
-                returnImage.setRGB(x, y, new Color(r, g, b).getRGB());
+                returnImage[x][y] = (r+g+b)/3 > threshold;
             }
         }
 
@@ -214,7 +199,7 @@ public class ThresholderOtsu implements IThresholder {
     }
     //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="Sum">
+    //<editor-fold defaultstate="collapsed" desc="Sum">
     /**
      * Returns sum of two images Returns null if images has different size
      *
@@ -255,7 +240,7 @@ public class ThresholderOtsu implements IThresholder {
     }
     //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="Convolution">
+    //<editor-fold defaultstate="collapsed" desc="Convolution">
     public static BufferedImage convolution(BufferedImage image, Integer[][] kernel) {
         int frame = 5;
         int kernelWidth = kernel.length;
@@ -293,7 +278,7 @@ public class ThresholderOtsu implements IThresholder {
     }
     //</editor-fold>
 
-//<editor-fold defaultstate="collapsed" desc="Median Filter">
+    //<editor-fold defaultstate="collapsed" desc="Median Filter">
     public static BufferedImage median(BufferedImage image, int kernel) {
         int kernelWidth = kernel;
         int kernelHeight = kernel;
