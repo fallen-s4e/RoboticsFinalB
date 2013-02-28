@@ -120,21 +120,19 @@ public class ThresholderOtsu implements IThresholder {
     }
     //</editor-fold>
 
-    public boolean[][] threshold1(CImage ci) {
+    public boolean[][] threshold1(BufferedImage img) {
         OtsuThresholder thr = new OtsuThresholder();
-        BufferedImage img = ci.getrImage();
         DataBufferByte db = (DataBufferByte) img.getData().getDataBuffer();
 
         byte[] srcData = db.getData(0);
         byte[] dstData = new byte[srcData.length];
         int threshold = thr.doThreshold(srcData, dstData);
-        return new ThresholderSimple(threshold).threshold(ci);
+        return new ThresholderSimple(threshold).threshold(img);
     }
 
     @Override
-    public boolean[][] threshold(CImage ci) {
+    public boolean[][] threshold(BufferedImage img) {
         
-        BufferedImage img = ci.getrImage();
         BufferedImage testedImage = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB);
 
         //        Default derivative filter
@@ -191,7 +189,7 @@ public class ThresholderOtsu implements IThresholder {
                 int g = c1.getGreen();
                 int b = c1.getBlue();
                 int threshold = 1;
-                returnImage[x][y] = (r+g+b)/3 > threshold;
+                returnImage[x][y] = (r+g+b)/3 < threshold;
             }
         }
 

@@ -5,24 +5,17 @@
 package roboticsimproc;
 
 import roboticsimproc.threshold.IThresholder;
-import roboticsimproc.threshold.ThresholderSimple;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Point;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Vector;
-import roboticsimproc.PointCrossing;
 import roboticsimproc.graph.GraphFactory;
 import roboticsimproc.graph.IGraph;
 import roboticsimproc.graph.pathfinder.IPathFinder;
 import roboticsimproc.graph.pathfinder.PathFinderDijkstraPoint;
-import roboticsimproc.graph.pathfinder.PathFinderDummy;
 import roboticsimproc.lectures.CImage;
 import roboticsimproc.lectures.cImageZoom;
 import roboticsimproc.threshold.ThresholderOtsu;
-import sun.dc.pr.PathFiller;
 
 /**
  *
@@ -39,7 +32,7 @@ public class Main {
      * entry point here
      */
     public CImage run() {
-        boolean[][] thr = ImProcUtils.inversedThreshold(thresholder.threshold(ci));
+        boolean[][] thr = ImProcUtils.inversedThreshold(thresholder.threshold(ci.getrImage()));
         boolean[][] extended = ImProcUtils.extendObstacles(thr, 4);
         Vector<Point> obstacles = ImProcUtils.getFirstRandomPoints(thr, 1000); // actually can use less it still remains correct
         obstacles.addAll(ImProcUtils.getCornerObstacles(thr));
@@ -84,7 +77,7 @@ public class Main {
      * entry point here
      */
     public CImage runVerbose() {
-        boolean[][] thr = ImProcUtils.inversedThreshold(thresholder.threshold(ci));
+        boolean[][] thr = ImProcUtils.inversedThreshold(thresholder.threshold(ci.getrImage()));
         boolean[][] extended = ImProcUtils.extendObstacles(thr, 4);
         Vector<Point> obstacles = ImProcUtils.getFirstRandomPoints(thr, 1000); // actually can use less it still remains correct
         obstacles.addAll(ImProcUtils.getCornerObstacles(thr));

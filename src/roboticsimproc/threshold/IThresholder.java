@@ -5,6 +5,7 @@
 package roboticsimproc.threshold;
 
 import java.awt.Point;
+import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
@@ -16,5 +17,5 @@ import roboticsimproc.lectures.CImage;
  * @author fallen
  */
 public interface IThresholder {
-    public boolean[][] threshold(CImage ci);
+    public boolean[][] threshold(BufferedImage ci);
 }
