@@ -4,15 +4,20 @@
  */
 package roboticsimproc.threshold;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import javax.imageio.ImageIO;
 import roboticsimproc.lectures.CImage;
 
 /**
  *
  * @author fallen
  */
-public class ThresholderOtsu implements IThresholder{
+public class ThresholderOtsu implements IThresholder {
 
     //<editor-fold defaultstate="collapsed" desc="OtsuThresholder">
     private static class OtsuThresholder {
@@ -126,5 +131,208 @@ public class ThresholderOtsu implements IThresholder{
         int threshold = thr.doThreshold(srcData, dstData);
         return new ThresholderSimple(threshold).threshold(ci);
     }
-    
+
+    private static BufferedImage threshold1(File file) throws IOException {
+
+        BufferedImage img = ImageIO.read(file);
+        BufferedImage testedImage = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_RGB);
+
+        //        Default derivative filter
+//        Integer[][] kernelX = {{-1, 0, 1},
+//            {-1, 0, 1}, {-1, 0, 1}};
+//        Integer[][] kernelY = {{1, 1, 1},
+//            {0, 0, 0},
+//            {-1, -1, -1}};
+
+
+//        Sobel filter
+        Integer[][] kernelX = {{1, 0, -1},
+            {2, 0, -2}, {1, 0, -1}};
+        Integer[][] kernelY = {{1, 2, 1},
+            {0, 0, 0},
+            {-1, -2, -1}};
+        Integer[][] noise = {
+            {1, 1, 1, 1},
+            {1, 0, 0, 1},
+            {1, 0, 0, 1},
+            {1, 1, 1, 1}};
+
+//        Roberts filter
+//        Integer[][] kernelX = {{0, 1}, {-1, 0}};
+//        Integer[][] kernelY = {{1, 0}, {0, -1}};
+
+        img = median(img, 9);
+        BufferedImage diffX = convolution(img, kernelX);
+        BufferedImage diffY = convolution(img, kernelY);
+        BufferedImage sum = sumImages(diffX, diffY);
+//        ImageOperations.drawFrame(sum);
+//        ImageOperations.drawFrame(binarize(convolution(sum, noise)));
+//        ImageIO.write(binarize(convolution(sum, noise)), "bmp", new File("trackPhotos/pohui.bmp"));
+//        ImageOperations.drawFrame(convolution(binarize(sum),noise));
+        return binarize(convolution(sum, noise));
+    }
+
+//<editor-fold defaultstate="collapsed" desc="Binarize">
+    /**
+     * Returns sum of two images Returns null if images has different size
+     *
+     * @param im1
+     * @param im2
+     * @return
+     */
+    public static BufferedImage binarize(BufferedImage image) {
+        int h1 = image.getHeight();
+        int w1 = image.getWidth();
+        BufferedImage returnImage = new BufferedImage(w1, h1, BufferedImage.TYPE_BYTE_BINARY);
+        for (int x = 0; x < w1; x++) {
+            for (int y = 0; y < h1; y++) {
+                Color c1 = new Color(image.getRGB(x, y));
+                int r = c1.getRed();
+                int g = c1.getGreen();
+                int b = c1.getBlue();
+                int threshold = 1;
+                if (r > threshold) {
+                    r = 0;
+                } else {
+                    r = 255;
+                }
+                if (g > threshold) {
+                    g = 0;
+                } else {
+                    g = 255;
+                }
+                if (b > threshold) {
+                    b = 0;
+                } else {
+                    b = 255;
+                }
+                returnImage.setRGB(x, y, new Color(r, g, b).getRGB());
+            }
+        }
+
+        return returnImage;
+    }
+    //</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="Sum">
+    /**
+     * Returns sum of two images Returns null if images has different size
+     *
+     * @param im1
+     * @param im2
+     * @return
+     */
+    public static BufferedImage sumImages(BufferedImage im1, BufferedImage im2) {
+        int h1 = im1.getHeight();
+        int w1 = im1.getWidth();
+        int h2 = im2.getHeight();
+        int w2 = im2.getWidth();
+        if (h1 != h2 || w1 != w2) {
+            return null;
+        }
+        BufferedImage returnImage = new BufferedImage(w1, h1, BufferedImage.TYPE_4BYTE_ABGR);
+        for (int x = 0; x < w1; x++) {
+            for (int y = 0; y < h1; y++) {
+                Color c1 = new Color(im1.getRGB(x, y));
+                int r1 = c1.getRed();
+                int g1 = c1.getGreen();
+                int b1 = c1.getBlue();
+
+                Color c2 = new Color(im2.getRGB(x, y));
+                int r2 = c1.getRed();
+                int g2 = c1.getGreen();
+                int b2 = c1.getBlue();
+
+                int r, b, g;
+                r = Math.min(255, r1 + r2);
+                g = Math.min(255, g1 + g2);
+                b = Math.min(255, b1 + b2);
+                returnImage.setRGB(x, y, new Color(r, g, b).getRGB());
+            }
+        }
+
+        return returnImage;
+    }
+    //</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="Convolution">
+    public static BufferedImage convolution(BufferedImage image, Integer[][] kernel) {
+        int frame = 5;
+        int kernelWidth = kernel.length;
+        int kernelHeight = kernel[0].length;
+        int kernelLenght = kernelHeight * kernelWidth;
+        BufferedImage returnImage =
+                new BufferedImage(image.getWidth() - frame,
+                image.getHeight() - frame, BufferedImage.TYPE_4BYTE_ABGR);
+        for (int x = 0; x < image.getWidth() - frame; x++) {
+            for (int y = 0; y < image.getHeight() - frame; y++) {
+
+                int[] sum = {0, 0, 0};
+                for (int i = 0; i < kernelWidth; i++) {
+                    for (int j = 0; j < kernelHeight; j++) {
+                        int pixelPosX = x + (i - (kernelWidth / 2));
+                        int pixelPosY = y + (j - (kernelHeight / 2));
+                        if (pixelPosX < 0 || pixelPosY < 0
+                                || pixelPosX >= image.getWidth()
+                                || pixelPosY >= image.getHeight()) {
+                            continue;
+                        }
+                        Color c = new Color(image.getRGB(pixelPosX, pixelPosY));
+                        sum[0] += c.getRed() * kernel[i][j];
+                        sum[1] += c.getGreen() * kernel[i][j];
+                        sum[2] += c.getBlue() * kernel[i][j];
+                    }
+                }
+                int r = Math.max(0, Math.min(255, Math.abs(sum[0] / kernelLenght)));
+                int g = Math.max(0, Math.min(255, Math.abs(sum[1] / kernelLenght)));
+                int b = Math.max(0, Math.min(255, Math.abs(sum[2] / kernelLenght)));
+                returnImage.setRGB(x, y, new Color(r, g, b).getRGB());
+            }
+        }
+        return returnImage;
+    }
+    //</editor-fold>
+
+//<editor-fold defaultstate="collapsed" desc="Median Filter">
+    public static BufferedImage median(BufferedImage image, int kernel) {
+        int kernelWidth = kernel;
+        int kernelHeight = kernel;
+        int kernelLenght = kernelHeight * kernelWidth;
+        BufferedImage returnImage =
+                new BufferedImage(image.getWidth(),
+                image.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+
+                int[][] sum = new int[3][kernelLenght];
+                int s = 0;
+                for (int i = 0; i < kernelWidth; i++) {
+                    for (int j = 0; j < kernelHeight; j++) {
+                        int pixelPosX = x + (i - (kernelWidth / 2));
+                        int pixelPosY = y + (j - (kernelHeight / 2));
+                        if (pixelPosX < 0 || pixelPosY < 0
+                                || pixelPosX >= image.getWidth()
+                                || pixelPosY >= image.getHeight()) {
+                            sum[0][s] = 0;
+                            sum[1][s] = 0;
+                            sum[2][s] = 0;
+                            continue;
+                        }
+                        Color c = new Color(image.getRGB(pixelPosX, pixelPosY));
+                        sum[0][s] = c.getRed();
+                        sum[1][s] = c.getGreen();
+                        sum[2][s] = c.getBlue();
+                        s += 1;
+                    }
+                }
+                Arrays.sort(sum[0]);
+                Arrays.sort(sum[1]);
+                Arrays.sort(sum[2]);
+                returnImage.setRGB(x, y, new Color(sum[0][kernelLenght / 2 + 1],
+                        sum[1][kernelLenght / 2 + 1], sum[2][kernelLenght / 2 + 1]).getRGB());
+            }
+        }
+        return returnImage;
+    }
+    //</editor-fold>
 }
