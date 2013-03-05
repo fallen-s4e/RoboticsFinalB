@@ -71,14 +71,13 @@ public class PointCrossing {
         return minDist;
     }
 
+    //<editor-fold desc="crossing finder" defaultstate="collapsed">
     /**
      * returns points for each points crossing
      */
     public static Vector<PointCrossing> pointCrossings(Vector<Point> points,
-            boolean[][] thresholded) {
+            boolean[][] extended) {
         Vector<PointCrossing> res = new Vector<PointCrossing>();
-        boolean[][] extended = ImProcUtils.extendObstacles(
-                thresholded, (int) ImProcUtils.MIN_EUCLID_DISTANCE);
         for (int i = 0; i < points.size(); i++) {
             for (int j = i + 1; j < points.size(); j++) {
                 Point p1 = points.get(i);
@@ -95,32 +94,9 @@ public class PointCrossing {
         }
         return res;
     }
+    //</editor-fold>
 
-    public static Vector<PointCrossing> unconcentrateCrossings(
-            Vector<PointCrossing> crossings, int distance, int w, int h) {
-        boolean[][] arr = new boolean[h][w]; // all must be false by default
-        Vector<PointCrossing> res = new Vector<PointCrossing>();
-        int d = distance / 2;
-        for (PointCrossing crossing : crossings) {
-            int x = crossing.crossing.x;
-            int y = crossing.crossing.y;
-            if (!arr[y][x]) { // not visited
-                res.add(crossing);
-                for (int i = -d; i < d; i++) {
-                    for (int j = -d; j < d; j++) {
-                        try {
-                            if (i * i + j * j < d * d) {
-                                arr[i + y][j + x] = true;
-                            }
-                        } catch (ArrayIndexOutOfBoundsException ex) {
-                        }
-                    }
-                }
-            }
-        }
-        return res;
-    }
-
+    //<editor-fold desc="crossing filtering" defaultstate="collapsed">
     public static Vector<PointCrossing> filterBadCrossings(
             Vector<PointCrossing> crossings, boolean[][] thr) {
         Vector<PointCrossing> res = new Vector<PointCrossing>();
@@ -200,5 +176,6 @@ public class PointCrossing {
         res.removeAll(badPoints);
         return res;
     }
+    //</editor-fold>
     //</editor-fold>
 }

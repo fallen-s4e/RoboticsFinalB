@@ -29,52 +29,8 @@ public class Main {
     private GraphFactory grMaker = new GraphFactory();
     private IPathFinder<Point> pf = new PathFinderDijkstraPoint();//new PathFinderDummy<Point>(30);
     
-    /**
-     * entry point here
-     */
-    public CImage run() {
-        boolean[][] thr = ImProcUtils.inversedThreshold(thresholder.threshold(ci.getrImage()));
-        boolean[][] extended = ImProcUtils.extendObstacles(thr, 4);
-        Vector<Point> obstacles = ImProcUtils.getFirstRandomPoints(thr, 1000); // actually can use less it still remains correct
-        obstacles.addAll(ImProcUtils.getCornerObstacles(thr));
-        Vector<PointCrossing> crossings = PointCrossing.pointCrossings(obstacles, thr);
-
-        // drawing just point
-        // drawPoints(points, Color.blue, 2);
-
-        // drawing points crossing
-        crossings = PointCrossing.unconcentrateCrossings(crossings, 11, thr.length, thr[0].length);
-        System.out.println("crossings.size() = " + crossings.size());
-        // crossings = PointCrossing.improveCrossings(crossings); // should fix it before using
-
-        // drawing extended
-
-        // crossings.setSize(50);
-        System.out.println("crossings.size() = " + crossings.size());
-        crossings = PointCrossing.filterBadCrossings(crossings, extended);
-        System.out.println("crossings.size() = " + crossings.size());
-        // temp >>>
-        // crossings = PointCrossing.filterBadCrossings(crossings, extended);
-        
-        // path drawing
-        Vector<Point> nodes = PointCrossing.justCrossigns(crossings);
-        IGraph<Point> gr =
-                grMaker.makeSparseGraphBestKNeighbours(nodes, extended.length, 
-                extended[0].length, 7, thr, 30); // almost 2 euclidian dist
-        Point start = new Point(140, 280);
-        Point closest = ImProcUtils.findClosestEucl(start, nodes);
-        gr.addNode(start);
-        gr.addRelation(start, closest, 0);
-        
-        drawPath(pf.findPath(gr, start, obstacles));
-        drawCircle(start, Color.CYAN, 4);
-        
-        ci.ZoomDoubleXY();//ci.ZoomDoubleXY();
-        // drawPointCrossings(crossings);
-        return ci;
-    }
     
-        /**
+    /**
      * entry point here
      */
     public CImage runVerbose() {
@@ -83,14 +39,12 @@ public class Main {
         boolean[][] extended = ImProcUtils.extendObstacles(thr, 4);
         Vector<Point> obstacles = ImProcUtils.getFirstRandomPoints(thr, 1000); // actually can use less it still remains correct
         obstacles.addAll(ImProcUtils.getCornerObstacles(thr));
-        Vector<PointCrossing> crossings = PointCrossing.pointCrossings(obstacles, thr);
+        Vector<PointCrossing> crossings = PointCrossing.pointCrossings(obstacles, extended);
 
         // drawing just point
         // drawPoints(points, Color.blue, 2);
 
         // drawing points crossing
-        crossings = PointCrossing.unconcentrateCrossings(crossings, 11, thr.length, thr[0].length);
-        System.out.println("crossings.size() = " + crossings.size());
         // crossings = PointCrossing.improveCrossings(crossings); // should fix it before using
 
         // drawing extended
