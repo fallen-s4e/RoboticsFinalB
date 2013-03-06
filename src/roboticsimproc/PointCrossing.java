@@ -12,36 +12,35 @@ import java.util.*;
  *
  * @author fallen
  */
-public class PointCrossing {
+public class PointCrossing extends Point {
 
     //<editor-fold desc="non static" defaultstate="collapsed">
     private final Point point1;
     private final Point point2;
-    private final Point crossing;
     private Point closestObstacle = null;
     private final Vector<Point> points;
 
     public PointCrossing(Point point1, Point point2, Vector<Point> points) {
+        super(new Point((point1.x + point2.x) / 2, (point1.y + point2.y) / 2));
         this.point1 = point1;
         this.point2 = point2;
-        this.crossing = new Point((point1.x + point2.x) / 2, (point1.y + point2.y) / 2);
         this.points = points;
     }
 
     /** lazy method */
     public Point getClosestObstacle() {
         if (closestObstacle == null) {
-            closestObstacle = ImProcUtils.findClosestEucl(crossing, points);
+            closestObstacle = ImProcUtils.findClosestEucl(this, points);
         }
         return closestObstacle;
     }
     
     public double getClosestObstacleD() {
-        return ImProcUtils.euclideanDistance(crossing, getClosestObstacle());
+        return ImProcUtils.euclideanDistance(this, getClosestObstacle());
     }
 
     public Point getCrossing() {
-        return crossing;
+        return this;
     }
 
     public Point getPoint1() {
@@ -55,7 +54,7 @@ public class PointCrossing {
     @Override
     public String toString() {
         return String.format("(PointCrossing: pc = %s, p1 = %s, p2 = %s)", 
-                crossing.toString(), point1.toString(), point2.toString());
+                super.toString(), point1.toString(), point2.toString());
     }
     //</editor-fold>
 
@@ -76,20 +75,36 @@ public class PointCrossing {
      * returns points for each points crossing
      */
     public static Vector<PointCrossing> pointCrossings(Vector<Point> points,
-            boolean[][] extended) {
+            boolean[][] extended, int accuracy) {
         int k = 100;
         Vector<PointCrossing> res = new Vector<PointCrossing>();
         for (int i = 0; i < k; i++) {
             int x = new Random().nextInt(extended.length);
             int y = new Random().nextInt(extended[0].length);
-            res.add(generateNewPoint(new Point(x,y), points, 15));   
+            res.add(generateNewPoint(new Point(x,y), points, extended, accuracy));   
         }
         return res;
     }
     
     private static PointCrossing generateNewPoint(Point point, 
-            Vector<Point> points, int accuracy) {
-        throw new UnsupportedOperationException("not yet implemented");
+            Vector<Point> points, boolean[][] array, int accuracy) {
+        
+        // finding closest obstacle point and a point opposite to it
+        Point closest = ImProcUtils.findClosestEucl(point, points);
+        Direction oppDir = Direction.createFromPoints(point, closest).rotate(Math.PI);
+        Point oppClosest = ImProcUtils.findObstacleOnPath(point, oppDir, array,
+                ImProcUtils.Strategy.OBSTACLE_ON_LIMIT);
+        
+        // estimating distance to it
+        double closestD = ImProcUtils.euclideanDistance(point, closest);
+        double oppClosestD = ImProcUtils.euclideanDistance(point, oppClosest);
+        
+        PointCrossing middlePoint = new PointCrossing(closest, oppClosest, points);
+        
+        if (Math.abs(closestD - oppClosestD) < accuracy) {
+            return middlePoint;
+        }
+        return generateNewPoint(middlePoint, points, array, accuracy);
     }
     //</editor-fold>
 

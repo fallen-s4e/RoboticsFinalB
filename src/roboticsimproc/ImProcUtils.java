@@ -135,11 +135,49 @@ public class ImProcUtils {
         return false;
     }
 
+    /** rotates point p around point o */
+    public static Point rotatePoint(Point p, Point o, double angle) {
+        double x = Math.cos(angle) * (p.x - o.x) - Math.sin(angle) * (p.y - o.y) + o.x;
+        double y = Math.sin(angle) * (p.x - o.x) + Math.cos(angle) * (p.y - o.y) + o.y;
+        return new Point((int) x, (int) y);
+    }
+
+    public static enum Strategy {
+        OBSTACLE_ON_LIMIT, NOT_OBSTACLE_ON_LIMIT
+    }
+
+    /** returns first obstacle point on the path or null if nothing was found */
+    public static Point findObstacleOnPath(Point point, Direction oppDir,
+            final boolean[][] array, final Strategy strategy) {
+        final Point[] pPointer = new Point[]{null};
+        throughBresenham(point, oppDir.movePoint(point, 2000), new OnEachPointBehaviour() {
+
+            @Override
+            public boolean onEachPoint(Point p) {
+                try {
+                    if (array[p.x][p.y]) { // an obstacle found
+                        pPointer[0] = p;
+                        return true;       // stop cycle
+                    } else {
+                        if (strategy == Strategy.OBSTACLE_ON_LIMIT) {
+                            pPointer[0] = p;
+                        }
+                        return false;
+                    }
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                    return false;
+                }
+            }
+        });
+        return pPointer[0];
+    }
+
     //<editor-fold defaultstate="collapsed" desc="bresenham algo">
     public static interface OnEachPointBehaviour {
+
         public boolean onEachPoint(Point p);
     }
-    
+
     public static Vector<Point> bresenhamLine(Point p1, Point p2) {
         final Vector<Point> v = new Vector<Point>();
         throughBresenham(p1, p2, new OnEachPointBehaviour() {
@@ -152,11 +190,11 @@ public class ImProcUtils {
         });
         return v;
     }
-    
+
     /** there must be a way to optimize it */
-    public static void throughBresenham(Point p1, Point p2, 
+    public static void throughBresenham(Point p1, Point p2,
             OnEachPointBehaviour behaviour) {
-            int x0 = p1.x, x1 = p2.x;
+        int x0 = p1.x, x1 = p2.x;
         int y0 = p1.y, y1 = p2.y;
 
         int deltax = (x1 - x0);
@@ -167,19 +205,23 @@ public class ImProcUtils {
             double deltaerr = Math.abs(((double) deltay) / ((double) deltax));
             int yStep = y0 < y1 ? 1 : -1;
             if (x0 > x1) {
-                int y = y1;
-                for (int x = x1; x >= x0; x--) {
-                    if (behaviour.onEachPoint(new Point(x, y))) { return; }
+                int y = y0;
+                for (int x = x0; x >= x1; x--) {
+                    if (behaviour.onEachPoint(new Point(x, y))) {
+                        return;
+                    }
                     error += deltaerr;
                     if (error >= 0.5) {
-                        y -= yStep;
+                        y += yStep;
                         error = error - 1.0;
                     }
                 }
             } else {
                 int y = y0;
                 for (int x = x0; x <= x1; x++) {
-                    if (behaviour.onEachPoint(new Point(x, y))) { return; }
+                    if (behaviour.onEachPoint(new Point(x, y))) {
+                        return;
+                    }
                     error += deltaerr;
                     if (error >= 0.5) {
                         y += yStep;
@@ -191,19 +233,23 @@ public class ImProcUtils {
             double deltaerr = Math.abs(((double) deltax) / ((double) deltay));
             int xStep = x0 < x1 ? 1 : -1;
             if (y0 > y1) {
-                int x = x1;
-                for (int y = y1; y >= y0; y--) {
-                    if (behaviour.onEachPoint(new Point(x, y))) { return; }
+                int x = x0;
+                for (int y = y0; y >= y1; y--) {
+                    if (behaviour.onEachPoint(new Point(x, y))) {
+                        return;
+                    }
                     error += deltaerr;
                     if (error >= 0.5) {
-                        x -= xStep;
+                        x += xStep;
                         error = error - 1.0;
                     }
                 }
             } else {
                 int x = x0;
                 for (int y = y0; y <= y1; y++) {
-                    if (behaviour.onEachPoint(new Point(x, y))) { return; }
+                    if (behaviour.onEachPoint(new Point(x, y))) {
+                        return;
+                    }
                     error += deltaerr;
                     if (error >= 0.5) {
                         x += xStep;

@@ -39,14 +39,19 @@ public class Main {
         boolean[][] extended = ImProcUtils.extendObstacles(thr, 4);
         Vector<Point> obstacles = ImProcUtils.getFirstRandomPoints(thr, 1000); // actually can use less it still remains correct
         obstacles.addAll(ImProcUtils.getCornerObstacles(thr));
-        Vector<PointCrossing> crossings = PointCrossing.pointCrossings(obstacles, extended);
-
+        Vector<PointCrossing> crossings = PointCrossing.pointCrossings(
+                obstacles, extended, 30);
+        
+        crossings = PointCrossing.filterBadCrossings(crossings, extended);
         // drawing just point
         // drawPoints(points, Color.blue, 2);
 
         // drawing points crossing
         // crossings = PointCrossing.improveCrossings(crossings); // should fix it before using
 
+        drawExtended(extended);
+        drawPointCrossingsV1(crossings);
+        /*
         // drawing extended
         drawExtended(extended);
 
@@ -70,6 +75,7 @@ public class Main {
         
         drawPath(pf.findPath(gr, start, obstacles));
         drawCircle(start, Color.CYAN, 4);
+        */
         
         ci.ZoomDoubleXY();//ci.ZoomDoubleXY();
         // drawPointCrossings(crossings);
