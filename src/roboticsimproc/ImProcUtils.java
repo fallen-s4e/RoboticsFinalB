@@ -136,23 +136,40 @@ public class ImProcUtils {
     }
 
     //<editor-fold defaultstate="collapsed" desc="bresenham algo">
+    public static interface OnEachPointBehaviour {
+        public boolean onEachPoint(Point p);
+    }
+    
     public static Vector<Point> bresenhamLine(Point p1, Point p2) {
-        int x0 = p1.x, x1 = p2.x;
+        final Vector<Point> v = new Vector<Point>();
+        throughBresenham(p1, p2, new OnEachPointBehaviour() {
+
+            @Override
+            public boolean onEachPoint(Point p) {
+                v.add(p);
+                return false;
+            }
+        });
+        return v;
+    }
+    
+    /** there must be a way to optimize it */
+    public static void throughBresenham(Point p1, Point p2, 
+            OnEachPointBehaviour behaviour) {
+            int x0 = p1.x, x1 = p2.x;
         int y0 = p1.y, y1 = p2.y;
 
         int deltax = (x1 - x0);
         int deltay = (y1 - y0);
         double error = 0;
 
-        Vector<Point> v = new Vector<Point>();
         if (Math.abs(deltax) > Math.abs(deltay)) {
+            double deltaerr = Math.abs(((double) deltay) / ((double) deltax));
+            int yStep = y0 < y1 ? 1 : -1;
             if (x0 > x1) {
-                double deltaerr = Math.abs(((double) deltay) / ((double) deltax));
-                // note that this division needs to be done in a way that preserves the fractional part
                 int y = y1;
-                int yStep = y0 < y1 ? 1 : -1;
                 for (int x = x1; x >= x0; x--) {
-                    v.add(new Point(x, y));
+                    if (behaviour.onEachPoint(new Point(x, y))) { return; }
                     error += deltaerr;
                     if (error >= 0.5) {
                         y -= yStep;
@@ -160,12 +177,9 @@ public class ImProcUtils {
                     }
                 }
             } else {
-                double deltaerr = Math.abs(((double) deltay) / ((double) deltax));
-                // note that this division needs to be done in a way that preserves the fractional part
                 int y = y0;
-                int yStep = y0 < y1 ? 1 : -1;
                 for (int x = x0; x <= x1; x++) {
-                    v.add(new Point(x, y));
+                    if (behaviour.onEachPoint(new Point(x, y))) { return; }
                     error += deltaerr;
                     if (error >= 0.5) {
                         y += yStep;
@@ -174,13 +188,12 @@ public class ImProcUtils {
                 }
             }
         } else {
+            double deltaerr = Math.abs(((double) deltax) / ((double) deltay));
+            int xStep = x0 < x1 ? 1 : -1;
             if (y0 > y1) {
-                double deltaerr = Math.abs(((double) deltax) / ((double) deltay));
-                // note that this division needs to be done in a way that preserves the fractional part
                 int x = x1;
-                int xStep = x0 < x1 ? 1 : -1;
                 for (int y = y1; y >= y0; y--) {
-                    v.add(new Point(x, y));
+                    if (behaviour.onEachPoint(new Point(x, y))) { return; }
                     error += deltaerr;
                     if (error >= 0.5) {
                         x -= xStep;
@@ -188,12 +201,9 @@ public class ImProcUtils {
                     }
                 }
             } else {
-                double deltaerr = Math.abs(((double) deltax) / ((double) deltay));
-                // note that this division needs to be done in a way that preserves the fractional part
                 int x = x0;
-                int xStep = x0 < x1 ? 1 : -1;
                 for (int y = y0; y <= y1; y++) {
-                    v.add(new Point(x, y));
+                    if (behaviour.onEachPoint(new Point(x, y))) { return; }
                     error += deltaerr;
                     if (error >= 0.5) {
                         x += xStep;
@@ -202,7 +212,6 @@ public class ImProcUtils {
                 }
             }
         }
-        return v;
     }
     //</editor-fold>
 }
