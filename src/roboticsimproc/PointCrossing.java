@@ -13,7 +13,7 @@ import java.util.*;
  * @author fallen
  */
 public class PointCrossing {
-    
+
     //<editor-fold desc="non static" defaultstate="collapsed">
     private final Point point1;
     private final Point point2;
@@ -77,22 +77,19 @@ public class PointCrossing {
      */
     public static Vector<PointCrossing> pointCrossings(Vector<Point> points,
             boolean[][] extended) {
+        int k = 100;
         Vector<PointCrossing> res = new Vector<PointCrossing>();
-        for (int i = 0; i < points.size(); i++) {
-            for (int j = i + 1; j < points.size(); j++) {
-                Point p1 = points.get(i);
-                Point p2 = points.get(j);
-                PointCrossing pc = new PointCrossing(p1, p2, points);
-                if (!extended[pc.crossing.x][pc.crossing.y]) {
-                    res.add(pc);
-                }
-                /*
-                 * // variant 1 if (euclideanDistance(p1, p2) >
-                 * MIN_EUCLID_DISTANCE) { res.add(pc); }
-                 */
-            }
+        for (int i = 0; i < k; i++) {
+            int x = new Random().nextInt(extended.length);
+            int y = new Random().nextInt(extended[0].length);
+            res.add(generateNewPoint(new Point(x,y), points, 15));   
         }
         return res;
+    }
+    
+    private static PointCrossing generateNewPoint(Point point, 
+            Vector<Point> points, int accuracy) {
+        throw new UnsupportedOperationException("not yet implemented");
     }
     //</editor-fold>
 
