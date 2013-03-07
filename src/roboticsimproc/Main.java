@@ -40,7 +40,7 @@ public class Main {
         Vector<Point> obstacles = ImProcUtils.getFirstRandomPoints(thr, 1000); // actually can use less it still remains correct
         obstacles.addAll(ImProcUtils.getCornerObstacles(thr));
         Vector<PointCrossing> crossings = PointCrossing.pointCrossings(
-                obstacles, extended, 30);
+                1000, obstacles, extended, 15);
         
         crossings = PointCrossing.filterBadCrossings(crossings, extended);
         // drawing just point
@@ -51,6 +51,7 @@ public class Main {
 
         drawExtended(extended);
         drawPointCrossingsV1(crossings);
+        drawPoints(obstacles, Color.blue, 2);
         /*
         // drawing extended
         drawExtended(extended);
@@ -88,7 +89,7 @@ public class Main {
 
             @Override
             public void run() {
-                for (int i = 1; i < 5; i++) {
+                for (int i = 9; i < 10; i++) {
                     new Main(new cImageZoom("trackPhotos/foto"+i+".jpg")).runVerbose();
                 }
             }

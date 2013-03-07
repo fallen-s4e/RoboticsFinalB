@@ -34,7 +34,7 @@ public class PointCrossing extends Point {
         }
         return closestObstacle;
     }
-    
+
     public double getClosestObstacleD() {
         return ImProcUtils.euclideanDistance(this, getClosestObstacle());
     }
@@ -53,7 +53,7 @@ public class PointCrossing extends Point {
 
     @Override
     public String toString() {
-        return String.format("(PointCrossing: pc = %s, p1 = %s, p2 = %s)", 
+        return String.format("(PointCrossing: pc = %s, p1 = %s, p2 = %s)",
                 super.toString(), point1.toString(), point2.toString());
     }
     //</editor-fold>
@@ -74,37 +74,54 @@ public class PointCrossing extends Point {
     /**
      * returns points for each points crossing
      */
-    public static Vector<PointCrossing> pointCrossings(Vector<Point> points,
-            boolean[][] extended, int accuracy) {
-        int k = 100;
+    public static Vector<PointCrossing> pointCrossings(int numberOfPoints,
+            Vector<Point> points, boolean[][] extended, int accuracy) {
         Vector<PointCrossing> res = new Vector<PointCrossing>();
-        for (int i = 0; i < k; i++) {
-            int x = new Random().nextInt(extended.length);
-            int y = new Random().nextInt(extended[0].length);
-            res.add(generateNewPoint(new Point(x,y), points, extended, accuracy));   
+        Random r = new Random();
+        for (int i = 0; i < numberOfPoints; i++) {
+            int x = r.nextInt(extended.length);
+            int y = r.nextInt(extended[0].length);
+            PointCrossing pc = generateNewPoint(new Point(x, y), points, extended, accuracy);
+            if (pc != null) {
+                res.add(pc);
+            }
         }
         return res;
     }
-    
-    private static PointCrossing generateNewPoint(Point point, 
-            Vector<Point> points, boolean[][] array, int accuracy) {
-        
-        // finding closest obstacle point and a point opposite to it
-        Point closest = ImProcUtils.findClosestEucl(point, points);
-        Direction oppDir = Direction.createFromPoints(point, closest).rotate(Math.PI);
-        Point oppClosest = ImProcUtils.findObstacleOnPath(point, oppDir, array,
-                ImProcUtils.Strategy.OBSTACLE_ON_LIMIT);
-        
-        // estimating distance to it
-        double closestD = ImProcUtils.euclideanDistance(point, closest);
-        double oppClosestD = ImProcUtils.euclideanDistance(point, oppClosest);
-        
-        PointCrossing middlePoint = new PointCrossing(closest, oppClosest, points);
-        
-        if (Math.abs(closestD - oppClosestD) < accuracy) {
-            return middlePoint;
+
+    private static PointCrossing generateNewPoint(final Point point,
+            Vector<Point> points, boolean[][] array, int sufficientAccuracyDelta) {
+        Point aPoint = point;
+
+        int i = 0;
+        Point lastPoint = aPoint;
+        for (i = 0; i < 200; i++) {
+            // finding closest obstacle point and a point opposite to it
+            Point closest = ImProcUtils.findClosestEucl(aPoint, points);
+            Direction oppDir = Direction.createFromPoints(aPoint, closest).rotate(Math.PI);
+            Point oppClosest = ImProcUtils.findObstacleOnPath(aPoint, oppDir, array,
+                    ImProcUtils.Strategy.OBSTACLE_ON_LIMIT);
+
+            // estimating distance to it
+            double closestD = ImProcUtils.euclideanDistance(aPoint, closest);
+            double oppClosestD = ImProcUtils.euclideanDistance(aPoint, oppClosest);
+
+            PointCrossing middlePoint = new PointCrossing(closest, oppClosest, points);
+
+            System.out.println("middlePoint = " + middlePoint);
+            double accuracy = Math.abs(ImProcUtils.euclideanDistance(aPoint, middlePoint));
+            if (accuracy <= sufficientAccuracyDelta) {
+                System.out.println("!");
+                System.out.println("middlePoint = " + middlePoint);
+                System.out.println("closest = " + closest);
+                System.out.println("oppClosest = " + oppClosest);
+                System.out.println("closestD = " + closestD);
+                System.out.println("oppClosestD = " + oppClosestD);
+                return middlePoint;
+            }
+            aPoint = middlePoint;
         }
-        return generateNewPoint(middlePoint, points, array, accuracy);
+        return null; // bad generation
     }
     //</editor-fold>
 
@@ -125,7 +142,7 @@ public class PointCrossing extends Point {
 
         int n = pointsOnPath.size();
         double blindZone = 0.40; // the zone which is not checked. 0.5 is a fully blind
-        for (int i = (int) (n*blindZone); i < n*(1-blindZone); i++) {
+        for (int i = (int) (n * blindZone); i < n * (1 - blindZone); i++) {
             Point p = pointsOnPath.get(i);
             if (thr[p.x][p.y]) {
                 return true;
@@ -133,7 +150,7 @@ public class PointCrossing extends Point {
         }
         return false;
     }
-    
+
     public static Vector<Point> justCrossigns(Vector<PointCrossing> crossings) {
         Vector<Point> v = new Vector<Point>();
         for (PointCrossing pc : crossings) {
@@ -151,8 +168,8 @@ public class PointCrossing extends Point {
                 continue;
             }
             double minDist = pc.getClosestObstacleD();
-            double radius = 0.4*minDist; // radius to search in
-            
+            double radius = 0.4 * minDist; // radius to search in
+
             // getting neighbours in a radius
             Vector<PointCrossing> neighbours = new Vector<PointCrossing>();
             for (int j = 0; j < crossings.size(); j++) {
@@ -163,26 +180,26 @@ public class PointCrossing extends Point {
                 }
             }
             System.out.println("neighbours.size() = " + neighbours.size());
-            
+
             // getting the best neighbours amoung them
             Vector<PointCrossing> worstNeighbours = new Vector<PointCrossing>(neighbours.size());
             worstNeighbours.setSize(neighbours.size());
             Collections.copy(worstNeighbours, neighbours);
-            int numBestPoints = (int) (worstNeighbours.size()/1.2);///(int)Math.sqrt(worstNeighbours.size());
+            int numBestPoints = (int) (worstNeighbours.size() / 1.2);///(int)Math.sqrt(worstNeighbours.size());
             Collections.sort(worstNeighbours, new Comparator<PointCrossing>() {
 
                 @Override
                 public int compare(PointCrossing pc1, PointCrossing pc2) {
-                    return (int)(pc2.getClosestObstacleD() - pc1.getClosestObstacleD());
+                    return (int) (pc2.getClosestObstacleD() - pc1.getClosestObstacleD());
                 }
             });
-            worstNeighbours.setSize(Math.min(worstNeighbours.size(), 
+            worstNeighbours.setSize(Math.min(worstNeighbours.size(),
                     worstNeighbours.size() - numBestPoints));
             badPoints.addAll(worstNeighbours);
-            
+
             System.out.println("worstNeighbours.size() = " + worstNeighbours.size());
         }
-        
+
         Vector<PointCrossing> res = new Vector<PointCrossing>();
         res.addAll(crossings);
         res.removeAll(badPoints);
