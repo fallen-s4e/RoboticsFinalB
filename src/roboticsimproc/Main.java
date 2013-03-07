@@ -10,6 +10,8 @@ import java.awt.EventQueue;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Vector;
 import roboticsimproc.graph.GraphFactory;
 import roboticsimproc.graph.IGraph;
@@ -29,8 +31,7 @@ public class Main {
     private IThresholder thresholder = new ThresholderOtsu();//was simple 90
     private GraphFactory grMaker = new GraphFactory();
     private IPathFinder<Point> pf = new PathFinderDijkstraPoint();//new PathFinderDummy<Point>(30);
-    
-    
+
     /**
      * entry point here
      */
@@ -43,14 +44,13 @@ public class Main {
         obstacles.addAll(ImProcUtils.getCornerObstacles(thr));
         Vector<PointCrossing> crossings = PointCrossing.pointCrossings(
                 1000, obstacles, extended, 30);
-        
-        crossings = PointCrossing.filterBadCrossings(crossings, extended);
+
         // drawing just point
         // drawPoints(points, Color.blue, 2);
 
         // drawing points crossing
         // crossings = PointCrossing.improveCrossings(crossings); // should fix it before using
-        
+
         // drawing extended
         drawExtended(extended);
 
@@ -61,19 +61,23 @@ public class Main {
         drawPointCrossings(crossings);
         // temp >>>
         // crossings = PointCrossing.filterBadCrossings(crossings, extended);
-        
+
         // path drawing
         Vector<Point> nodes = PointCrossing.justCrossigns(crossings);
-        IGraph<Point> gr =
-                grMaker.makeSparseGraphBestKNeighbours(nodes, extended.length, 
-                extended[0].length, 7, thr, 30); // almost 2 euclidian dist
-        Point start = new Point(140, 280);
+        Point start = new Point(ci.getW() / 2, ci.getH() - 5);
         Point closest = ImProcUtils.findClosestEucl(start, nodes);
+        IGraph<Point> gr =
+                grMaker.makeSparseGraphBestKNeighbours(nodes, extended.length,
+                extended[0].length, 37, thr, 60); // almost 4 euclidian dist
+        
+        // drawGraph(gr, closest, Color.red, new HashSet<Point>(), 10);
         gr.addNode(start);
         gr.addRelation(start, closest, 0);
-        
+
         drawPath(pf.findPath(gr, start, obstacles));
         drawCircle(start, Color.CYAN, 4);
+        drawCircle(closest, Color.CYAN, 4);
+
         
         ci.ZoomDoubleXY();//ci.ZoomDoubleXY();
         // drawPointCrossings(crossings);
@@ -87,17 +91,17 @@ public class Main {
             @Override
             public void run() {
                 for (int i = 1; i < 2; i++) {
-                    new Main(new cImageZoom("trackPhotos/foto"+i+".jpg")).runVerbose();
+                    new Main(new cImageZoom("trackPhotos/foto" + i + ".jpg")).runVerbose();
                 }
             }
         });
     }
-    
+
     public Main(cImageZoom ci) {
         this.ci = ci;
     }
     //</editor-fold>
-    
+
     //<editor-fold defaultstate="collapsed" desc="drawings">
     private void drawPoints(Vector<Point> points, Color color, int thickness) {
         for (int i = 0; i < points.size(); i++) {
@@ -153,8 +157,8 @@ public class Main {
             prev = path.get(i);
         }
     }
-    
-     private void drawCircle(Point p, Color color, int len) {
+
+    private void drawCircle(Point p, Color color, int len) {
         int x = p.x;
         int y = p.y;
         int l = len / 2;
@@ -166,6 +170,18 @@ public class Main {
                     }
                 } catch (IndexOutOfBoundsException ex) {
                 }
+            }
+        }
+    }
+    
+    private void drawGraph(IGraph<Point> gr, Point start, Color color,
+            Set<Point> visited, int maxdepth) {
+        if (!visited.contains(start) && maxdepth > 0) {
+            visited.add(start);
+            Vector<Point> neighbours = gr.relatedWith(start);
+            for (Point neighbour : neighbours) {
+                drawLine(start, neighbour);
+                drawGraph(gr, neighbour, color, visited, maxdepth-1);
             }
         }
     }

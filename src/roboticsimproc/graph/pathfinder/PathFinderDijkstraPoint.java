@@ -62,7 +62,7 @@ public class PathFinderDijkstraPoint implements IPathFinder<Point> {
                 @Override
                 public int compare(Point p1, Point p2) {
                     // return (int) (gr.relationPrice(curPoint, p2) - gr.relationPrice(curPoint, p1));
-                    stepPrice(gr, curPoint, p2, obst);
+                    stepPriceV1(gr, curPoint, p2, obst);
                     return (int) (gr.relationPrice(curPoint, p2) - 
                             gr.relationPrice(curPoint, p1));
                 }
@@ -92,7 +92,12 @@ public class PathFinderDijkstraPoint implements IPathFinder<Point> {
         return getPath(startingNode, p, bestPath);
     }
 
-    private double stepPrice(IGraph<Point> gr,
+    private double stepPriceV1(IGraph<Point> gr,
+            Point curNode, Point node, Vector<Point> osbt) {
+        return ImProcUtils.findClosestEuclD(node, osbt);
+    }
+    
+    private double stepPriceV2(IGraph<Point> gr,
             Point curNode, Point node, Vector<Point> osbt) {
         double coef1 = 0.5;
         double coef2 = 5.5;

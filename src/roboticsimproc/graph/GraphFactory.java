@@ -76,6 +76,11 @@ public class GraphFactory {
                     }
                 }
             }
+            
+            // number of best neighbours must be less or eq than k
+            if (bestNeighbours.size() > k) { 
+                throw new AssertionError("inner bug number of neighbours is more than k"); 
+            }
             for (int j = 0; j < bestNeighbours.size(); j++) {
                 Point c2 = bestNeighbours.get(j);
                 double dist = ImProcUtils.euclideanDistance(c1, c2);
