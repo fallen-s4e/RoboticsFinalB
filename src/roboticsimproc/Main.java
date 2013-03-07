@@ -9,6 +9,7 @@ import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.Collections;
 import java.util.Vector;
 import roboticsimproc.graph.GraphFactory;
 import roboticsimproc.graph.IGraph;
@@ -38,9 +39,10 @@ public class Main {
                 ImProcUtils.deepCopyImage(ci.getrImage())));
         boolean[][] extended = ImProcUtils.extendObstacles(thr, 4);
         Vector<Point> obstacles = ImProcUtils.getFirstRandomPoints(thr, 1000); // actually can use less it still remains correct
+
         obstacles.addAll(ImProcUtils.getCornerObstacles(thr));
         Vector<PointCrossing> crossings = PointCrossing.pointCrossings(
-                1000, obstacles, extended, 15);
+                1000, obstacles, extended, 30);
         
         crossings = PointCrossing.filterBadCrossings(crossings, extended);
         // drawing just point
@@ -48,11 +50,7 @@ public class Main {
 
         // drawing points crossing
         // crossings = PointCrossing.improveCrossings(crossings); // should fix it before using
-
-        drawExtended(extended);
-        drawPointCrossingsV1(crossings);
-        drawPoints(obstacles, Color.blue, 2);
-        /*
+        
         // drawing extended
         drawExtended(extended);
 
@@ -76,7 +74,6 @@ public class Main {
         
         drawPath(pf.findPath(gr, start, obstacles));
         drawCircle(start, Color.CYAN, 4);
-        */
         
         ci.ZoomDoubleXY();//ci.ZoomDoubleXY();
         // drawPointCrossings(crossings);
@@ -89,7 +86,7 @@ public class Main {
 
             @Override
             public void run() {
-                for (int i = 9; i < 10; i++) {
+                for (int i = 1; i < 2; i++) {
                     new Main(new cImageZoom("trackPhotos/foto"+i+".jpg")).runVerbose();
                 }
             }

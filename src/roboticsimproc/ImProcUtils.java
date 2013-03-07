@@ -103,9 +103,10 @@ public class ImProcUtils {
 
     public static Point findClosestEucl(Point p, Vector<Point> ps) {
         Point bestP = ps.get(0);
-        for (int i = 0; i < ps.size(); i++) {
+        int i = 0;
+        for (i = 0; i < ps.size(); i++) {
             if (ps.get(i) != p) {
-                if (euclideanDistance(bestP, p) > euclideanDistance(bestP, ps.get(i))) {
+                if (euclideanDistance(bestP, p) > euclideanDistance(p, ps.get(i))) {
                     bestP = ps.get(i);
                 }
             }

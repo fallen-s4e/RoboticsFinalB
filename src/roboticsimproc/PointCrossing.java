@@ -94,7 +94,6 @@ public class PointCrossing extends Point {
         Point aPoint = point;
 
         int i = 0;
-        Point lastPoint = aPoint;
         for (i = 0; i < 200; i++) {
             // finding closest obstacle point and a point opposite to it
             Point closest = ImProcUtils.findClosestEucl(aPoint, points);
@@ -108,15 +107,8 @@ public class PointCrossing extends Point {
 
             PointCrossing middlePoint = new PointCrossing(closest, oppClosest, points);
 
-            System.out.println("middlePoint = " + middlePoint);
             double accuracy = Math.abs(ImProcUtils.euclideanDistance(aPoint, middlePoint));
             if (accuracy <= sufficientAccuracyDelta) {
-                System.out.println("!");
-                System.out.println("middlePoint = " + middlePoint);
-                System.out.println("closest = " + closest);
-                System.out.println("oppClosest = " + oppClosest);
-                System.out.println("closestD = " + closestD);
-                System.out.println("oppClosestD = " + oppClosestD);
                 return middlePoint;
             }
             aPoint = middlePoint;
